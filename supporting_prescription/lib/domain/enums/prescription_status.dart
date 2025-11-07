@@ -1,0 +1,1 @@
+enum PrescriptionStatus { pending, dispensed, cancelled }

@@ -1,0 +1,1 @@
+enum MedForm { tablet, capsule, liquid, injection, inhaler, cream }
