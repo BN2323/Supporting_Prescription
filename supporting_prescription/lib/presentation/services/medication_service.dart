@@ -114,8 +114,9 @@ class MedicationService {
       final doses = JsonHandler.loadDoses();
       final today = DateTime.now();
       
-      // TEMPORARY FIX: Return all today's doses since DoseIntake doesn't have patientId
+      // FIXED: Filter by patientId AND today's date
       return doses.where((dose) =>
+        dose.patientId == patientId && // Use the patientId field
         dose.scheduledTime.year == today.year &&
         dose.scheduledTime.month == today.month &&
         dose.scheduledTime.day == today.day
