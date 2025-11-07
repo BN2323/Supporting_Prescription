@@ -5,7 +5,7 @@ class Doctor extends User {
   final String licenseNumber;
   final String specialization;
   
-  Doctor({required String id, required String name, required String phone, required String password,
+  Doctor({required super.id, required super.name, required super.phone, required super.password,
         required this.licenseNumber, required this.specialization}) 
-      : super(id: id, name: name, phone: phone, password: password, role: Role.doctor);
+      : super(role: Role.doctor);
 }

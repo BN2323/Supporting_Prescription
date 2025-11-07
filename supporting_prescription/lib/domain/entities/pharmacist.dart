@@ -6,11 +6,11 @@ class Pharmacist extends User {
   final String pharmacyName;
   
   Pharmacist({
-    required String id, 
-    required String name, 
-    required String phone, 
-    required String password,
+    required super.id, 
+    required super.name, 
+    required super.phone, 
+    required super.password,
     required this.registrationId,
     required this.pharmacyName
-  }) : super(id: id, name: name, phone: phone, password: password, role: Role.pharmacist);
+  }) : super(role: Role.pharmacist);
 }

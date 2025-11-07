@@ -12,7 +12,7 @@ class Prescription {
   
   Prescription({required this.id, required this.doctorId, required this.patientId, 
                DateTime? dateIssued, required this.deaNumber, this.status = PrescriptionStatus.pending})
-      : this.dateIssued = dateIssued ?? DateTime.now(), medications = [];
+      : dateIssued = dateIssued ?? DateTime.now(), medications = [];
   
   void addMedication(Medication med) => medications.add(med);
   

@@ -14,7 +14,7 @@ class RenewalRequest {
     required this.prescriptionId,
     DateTime? requestedDate,
     this.status = RenewalStatus.pending,
-  }): this.requestedDate = requestedDate ?? DateTime.now();
+  }): requestedDate = requestedDate ?? DateTime.now();
   
   void approve(String note) {
     status = RenewalStatus.approved;

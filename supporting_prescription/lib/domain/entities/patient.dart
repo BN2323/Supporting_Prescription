@@ -7,7 +7,7 @@ class Patient extends User {
   final DateTime dob;
   final Sex sex;
   
-  Patient({required String id, required String name, required String phone, required String password,
+  Patient({required super.id, required super.name, required super.phone, required super.password,
          required this.address, required this.dob, required this.sex}) 
-      : super(id: id, name: name, phone: phone, password: password, role: Role.patient);
+      : super(role: Role.patient);
 }
