@@ -90,8 +90,8 @@ class MedicationService {
       final doses = JsonHandler.loadDoses();
       final today = DateTime.now();
       
+      // TEMPORARY FIX: Return all today's doses since DoseIntake doesn't have patientId
       return doses.where((dose) =>
-        dose.id == patientId &&
         dose.scheduledTime.year == today.year &&
         dose.scheduledTime.month == today.month &&
         dose.scheduledTime.day == today.day
@@ -131,10 +131,8 @@ class MedicationService {
     try {
       final doses = JsonHandler.loadDoses();
       
-      return doses
-          .where((dose) => dose.id == patientId)
-          .toList()
-          ..sort((a, b) => b.scheduledTime.compareTo(a.scheduledTime));
+      // TEMPORARY FIX: Return all doses sorted by time
+      return doses.toList()..sort((a, b) => b.scheduledTime.compareTo(a.scheduledTime));
     } catch (e) {
       print('Error loading dose history: $e');
       return [];
@@ -147,8 +145,8 @@ class MedicationService {
       final now = DateTime.now();
       final endDate = now.add(Duration(days: daysAhead));
       
+      // TEMPORARY FIX: Return all upcoming doses
       return doses.where((dose) =>
-        dose.id == patientId &&
         dose.scheduledTime.isAfter(now) &&
         dose.scheduledTime.isBefore(endDate) &&
         !dose.isTaken
@@ -162,11 +160,11 @@ class MedicationService {
   // New method to get medication adherence rate
   double getAdherenceRate(String patientId) {
     final doses = JsonHandler.loadDoses();
-    final patientDoses = doses.where((d) => d.id == patientId).toList();
     
-    if (patientDoses.isEmpty) return 0.0;
+    // TEMPORARY FIX: Calculate adherence for all doses
+    if (doses.isEmpty) return 0.0;
     
-    final takenDoses = patientDoses.where((d) => d.isTaken).length;
-    return (takenDoses / patientDoses.length) * 100;
+    final takenDoses = doses.where((d) => d.isTaken).length;
+    return (takenDoses / doses.length) * 100;
   }
 }
