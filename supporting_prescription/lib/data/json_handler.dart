@@ -11,6 +11,49 @@ import './mappers/renewal_mapper.dart';
 
 class JsonHandler {
   static const String _dataDir = 'data';
+  static const String _sequenceFile = '$_dataDir/sequences.json';
+  
+  static final Map<String, int> _sequences = {};
+  static bool _sequencesInitialized = false;
+  
+  static void _initializeSequences() {
+    if (_sequencesInitialized) return;
+    
+    try {
+      final file = File(_sequenceFile);
+      if (file.existsSync()) {
+        final content = file.readAsStringSync();
+        if (content.trim().isNotEmpty) {
+          final data = jsonDecode(content);
+          _sequences.addAll(Map<String, int>.from(data));
+        }
+      }
+    } catch (e) {
+      print('Warning: Error loading sequences: $e');
+    }
+    
+    // Initialize default sequences
+    _sequences.putIfAbsent('doctor', () => 1);
+    _sequences.putIfAbsent('patient', () => 1);
+    _sequences.putIfAbsent('pharmacist', () => 1);
+    _sequences.putIfAbsent('prescription', () => 1);
+    _sequences.putIfAbsent('medication', () => 1);
+    _sequences.putIfAbsent('renewal', () => 1);
+    _sequences.putIfAbsent('dose', () => 1);
+    
+    _saveSequences();
+    _sequencesInitialized = true;
+  }
+  
+  static void _saveSequences() {
+    try {
+      Directory(_dataDir).createSync(recursive: true);
+      final file = File(_sequenceFile);
+      file.writeAsStringSync(jsonEncode(_sequences));
+    } catch (e) {
+      print('Error saving sequences: $e');
+    }
+  }
   
   static Map<String, dynamic> _loadRaw(String fileName) {
     try {
@@ -81,9 +124,19 @@ class JsonHandler {
   }
   
   static String getNextId(String entityType) {
+    _initializeSequences();
+    
     final prefix = _getPrefix(entityType);
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return '$prefix$timestamp';
+    final sequence = _sequences[entityType] ?? 1;
+    
+    // Clean sequential ID: PREFIX_SEQUENCE
+    final id = '${prefix}_${sequence.toString().padLeft(6, '0')}';
+    
+    // Increment sequence for next call
+    _sequences[entityType] = sequence + 1;
+    _saveSequences();
+    
+    return id;
   }
   
   static String _getPrefix(String entityType) {
@@ -97,5 +150,11 @@ class JsonHandler {
       case 'dose': return 'DOSE';
       default: return 'ID';
     }
+  }
+  
+  // Method to check current sequences (useful for debugging)
+  static Map<String, int> getCurrentSequences() {
+    _initializeSequences();
+    return Map.from(_sequences);
   }
 }

@@ -1,9 +1,9 @@
 import 'dart:io';
-import '../../../domain/entities/user.dart';
-import '../../../domain/entities/doctor.dart';
-import '../../../domain/entities/patient.dart';
-import '../../../domain/entities/pharmacist.dart';
-import '../../../domain/enums/sex.dart';
+import 'package:supporting_prescription/domain/entities/doctor.dart';
+import 'package:supporting_prescription/domain/entities/patient.dart';
+import 'package:supporting_prescription/domain/entities/pharmacist.dart';
+import 'package:supporting_prescription/domain/entities/user.dart';
+import 'package:supporting_prescription/domain/enums/sex.dart';
 import '../../services/auth_service.dart';
 
 class DoctorRegistrationScreen {
@@ -13,10 +13,10 @@ class DoctorRegistrationScreen {
 
   User? show() {
     print('\n--- Doctor Registration ---');
-    final name = _getInput('Name: ');
+    final name = _getInput('Full Name: ');
     final phone = _getInput('Phone: ');
     final password = _getInput('Password: ');
-    final license = _getInput('License: ');
+    final license = _getInput('License Number: ');
     final specialization = _getInput('Specialization: ');
     
     final doctor = Doctor(
@@ -29,7 +29,7 @@ class DoctorRegistrationScreen {
     );
     
     _authService.registerUser(doctor);
-    print('Doctor registered!');
+    print('\nDoctor registration successful!');
     
     final success = _authService.login(phone, password);
     if (success) {
@@ -51,7 +51,7 @@ class PatientRegistrationScreen {
 
   User? show() {
     print('\n--- Patient Registration ---');
-    final name = _getInput('Name: ');
+    final name = _getInput('Full Name: ');
     final phone = _getInput('Phone: ');
     final password = _getInput('Password: ');
     final address = _getInput('Address: ');
@@ -67,7 +67,7 @@ class PatientRegistrationScreen {
     );
     
     _authService.registerUser(patient);
-    print('Patient registered!');
+    print('\nPatient registration successful!');
     
     final success = _authService.login(phone, password);
     if (success) {
@@ -89,7 +89,7 @@ class PharmacistRegistrationScreen {
 
   User? show() {
     print('\n--- Pharmacist Registration ---');
-    final name = _getInput('Name: ');
+    final name = _getInput('Full Name: ');
     final phone = _getInput('Phone: ');
     final password = _getInput('Password: ');
     final registrationId = _getInput('Registration ID: ');
@@ -105,7 +105,7 @@ class PharmacistRegistrationScreen {
     );
     
     _authService.registerUser(pharmacist);
-    print('Pharmacist registered!');
+    print('\nPharmacist registration successful!');
     
     final success = _authService.login(phone, password);
     if (success) {

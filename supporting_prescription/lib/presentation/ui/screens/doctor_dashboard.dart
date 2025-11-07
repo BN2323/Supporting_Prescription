@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'package:supporting_prescription/domain/entities/prescription.dart';
+
 import '../../../domain/entities/doctor.dart';
+import '../../../domain/entities/patient.dart';
 import '../../../domain/enums/medication_form.dart';
 import '../../../domain/enums/prescription_status.dart';
 import '../../services/auth_service.dart';
@@ -21,30 +24,32 @@ class DoctorMenu {
 
   void showMenu() {
     while (true) {
-      print('\n--- DOCTOR DASHBOARD ---');
+      print('\n=== DOCTOR DASHBOARD ===');
+      print('Welcome, Dr. ${_currentUser.name}');
       print('1. Create Prescription');
-      print('2. View My Prescriptions');
-      print('3. Cancel Prescription');
-      print('4. Manage Renewals');
-      print('5. View Patients');
-      print('6. Logout');
+      print('2. View & Manage Prescriptions');
+      print('3. Manage Renewal Requests');
+      print('4. View Patients');
+      print('5. Logout');
       
-      final choice = _getInput('Choose: ');
+      final choice = _getInput('Choose an option: ');
       
       switch (choice) {
         case '1': _createPrescription(); break;
-        case '2': _viewMyPrescriptions(); break;
-        case '3': _cancelPrescription(); break;
-        case '4': _manageRenewals(); break;
-        case '5': _viewPatients(); break;
-        case '6': return;
+        case '2': _viewAndManagePrescriptions(); break;
+        case '3': _manageRenewals(); break;
+        case '4': _viewPatients(); break;
+        case '5': 
+          print('\nLogging out... Goodbye, Dr. ${_currentUser.name}!');
+          return;
         default: print('Invalid choice!');
       }
     }
   }
 
   void _createPrescription() {
-    print('\n--- Create Prescription ---');
+    print('\n--- Create New Prescription ---');
+    
     final patients = _authService.getPatients();
     
     if (patients.isEmpty) {
@@ -52,79 +57,175 @@ class DoctorMenu {
       return;
     }
     
+    print('Available Patients:');
     for (final patient in patients) {
       print('${patient.id} - ${patient.name}');
     }
     
-    final patientId = _getInput('Patient ID: ');
-    final deaNumber = _getInput('DEA Number: ');
+    final patientId = _getInput('\nEnter Patient ID: ');
+    final patient = _authService.getPatient(patientId);
+    
+    if (patient == null) {
+      print('Patient not found!');
+      return;
+    }
+    
+    final deaNumber = _getInput('Enter DEA Number: ');
     
     try {
-      final patient = _authService.getPatient(patientId);
-      if (patient == null) {
-        print('Patient not found!');
-        return;
-      }
-      
       final prescription = _prescriptionService.createPrescription(
         _currentUser.id, patientId, deaNumber
       );
       
-      print('Prescription ${prescription.id} created!');
+      if (prescription != null) {
+        print('✅ Prescription ${prescription.id} created!');
+        
+        final addMeds = _getInput('Add medications now? (y/n): ');
+        if (addMeds.toLowerCase() == 'y') {
+          _addMedicationToPrescription(prescription.id);
+        }
+      }
     } catch (e) {
       print('Error: $e');
     }
   }
 
-  void _viewMyPrescriptions() {
+  void _viewAndManagePrescriptions() {
     final prescriptions = _prescriptionService.getPrescriptionsByDoctor(_currentUser.id);
     
-    print('\n--- My Prescriptions ---');
     if (prescriptions.isEmpty) {
-      print('No prescriptions found.');
+      print('\nNo prescriptions found.');
       return;
     }
     
-    for (final p in prescriptions) {
-      final patient = _authService.getPatient(p.patientId);
-      print('${p.id} - Patient: ${patient?.name} - Status: ${p.status}');
+    while (true) {
+      print('\n--- My Prescriptions ---');
+      for (int i = 0; i < prescriptions.length; i++) {
+        final p = prescriptions[i];
+        final patient = _authService.getPatient(p.patientId);
+        final statusIcon = p.status == PrescriptionStatus.pending ? '🟡' : 
+                          p.status == PrescriptionStatus.dispensed ? '✅' : '❌';
+        print('${i + 1}. $statusIcon ${p.id} - ${patient?.name} - ${p.status}');
+      }
+      print('${prescriptions.length + 1}. Back to main menu');
+      
+      final choice = int.tryParse(_getInput('\nSelect prescription to view (or ${prescriptions.length + 1} to go back): ')) ?? 0;
+      
+      if (choice == prescriptions.length + 1) {
+        return;
+      } else if (choice > 0 && choice <= prescriptions.length) {
+        _viewPrescriptionDetails(prescriptions[choice - 1]);
+      } else {
+        print('Invalid selection!');
+      }
     }
   }
 
-  void _cancelPrescription() {
-    final prescriptions = _prescriptionService.getPrescriptionsByDoctor(_currentUser.id);
+  void _viewPrescriptionDetails(Prescription prescription) {
+    while (true) {
+      final patient = _authService.getPatient(prescription.patientId);
+      
+      print('\n--- Prescription Details ---');
+      print('ID: ${prescription.id}');
+      print('Patient: ${patient?.name}');
+      print('Status: ${prescription.status}');
+      print('Date: ${prescription.dateIssued}');
+      print('DEA: ${prescription.deaNumber}');
+      
+      if (prescription.medications.isNotEmpty) {
+        print('\nMedications:');
+        for (final med in prescription.medications) {
+          print('  💊 ${med.name} ${med.strength}mg - ${med.form}');
+          print('     Dose: ${med.dose.amount}mg, ${med.dose.frequencyPerDay}x/day');
+        }
+      } else {
+        print('\nNo medications added.');
+      }
+      
+      print('\nOptions:');
+      print('1. Add Medication');
+      print('2. Cancel Prescription');
+      print('3. Back to list');
+      
+      final choice = _getInput('Choose: ');
+      
+      switch (choice) {
+        case '1': 
+          _addMedicationToPrescription(prescription.id);
+          break;
+        case '2': 
+          _cancelPrescription(prescription.id);
+          return; // Go back to list after cancellation
+        case '3': 
+          return;
+        default: 
+          print('Invalid choice!');
+      }
+    }
+  }
+
+  void _addMedicationToPrescription(String prescriptionId) {
+    print('\n--- Add Medication ---');
     
-    if (prescriptions.isEmpty) {
-      print('No prescriptions to cancel.');
-      return;
+    final name = _getInput('Medication Name: ');
+    final strength = double.tryParse(_getInput('Strength (mg): ')) ?? 0;
+    
+    print('Available Forms:');
+    for (int i = 0; i < MedForm.values.length; i++) {
+      print('${i + 1}. ${MedForm.values[i]}');
     }
     
-    _viewMyPrescriptions();
-    final id = _getInput('Prescription ID to cancel: ');
+    final formIndex = int.tryParse(_getInput('Select form: ')) ?? 1;
+    final form = formIndex > 0 && formIndex <= MedForm.values.length 
+        ? MedForm.values[formIndex - 1] 
+        : MedForm.tablet;
     
-    try {
-      _prescriptionService.cancelPrescription(id);
-      print('Prescription cancelled!');
-    } catch (e) {
-      print('Error: $e');
+    final amount = double.tryParse(_getInput('Dose Amount (mg): ')) ?? 0;
+    final frequency = int.tryParse(_getInput('Frequency per day: ')) ?? 1;
+    final duration = int.tryParse(_getInput('Duration (days): ')) ?? 7;
+    final instructions = _getInput('Instructions: ');
+    
+    final success = _prescriptionService.addMedicationToPrescription(
+      prescriptionId, name, strength, form, amount, frequency, duration, instructions
+    );
+    
+    if (success) {
+      print('✅ Medication added!');
+    } else {
+      print('❌ Failed to add medication');
+    }
+  }
+
+  void _cancelPrescription(String prescriptionId) {
+    final success = _prescriptionService.cancelPrescription(prescriptionId);
+    if (success) {
+      print('✅ Prescription cancelled!');
+    } else {
+      print('❌ Failed to cancel prescription');
     }
   }
 
   void _manageRenewals() {
     final renewals = _medicationService.getPendingRenewals();
     
-    print('\n--- Pending Renewals ---');
     if (renewals.isEmpty) {
-      print('No pending renewals.');
+      print('\nNo pending renewals.');
       return;
     }
     
+    print('\n--- Pending Renewals ---');
     for (final r in renewals) {
       final patient = _authService.getPatient(r.patientId);
       print('${r.id} - Patient: ${patient?.name} - Prescription: ${r.prescriptionId}');
     }
     
-    final renewalId = _getInput('Renewal ID: ');
+    final renewalId = _getInput('\nEnter Renewal ID: ');
+    
+    if (!_medicationService.renewalExists(renewalId)) {
+      print('Renewal not found!');
+      return;
+    }
+    
     final decision = _getInput('Approve? (y/n): ');
     final notes = _getInput('Notes: ');
     
@@ -143,6 +244,34 @@ class DoctorMenu {
     
     for (final patient in patients) {
       print('${patient.id} - ${patient.name} - ${patient.phone}');
+    }
+    
+    final patientId = _getInput('\nEnter Patient ID to view history (or press Enter to go back): ');
+    if (patientId.isEmpty) return;
+    
+    final patient = _authService.getPatient(patientId);
+    if (patient == null) {
+      print('Patient not found!');
+      return;
+    }
+    
+    _viewPatientHistory(patient);
+  }
+
+  void _viewPatientHistory(Patient patient) {
+    final prescriptions = _prescriptionService.getPatientPrescriptionHistory(patient.id);
+    
+    print('\n--- Prescription History for ${patient.name} ---');
+    if (prescriptions.isEmpty) {
+      print('No prescription history.');
+      return;
+    }
+    
+    for (final p in prescriptions) {
+      print('${p.id} - ${p.status} - ${p.dateIssued}');
+      for (final med in p.medications) {
+        print('  💊 ${med.name} ${med.strength}mg');
+      }
     }
   }
 

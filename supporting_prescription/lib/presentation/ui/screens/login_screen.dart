@@ -1,5 +1,6 @@
 import 'dart:io';
-import '../../../domain/entities/user.dart';
+import 'package:supporting_prescription/domain/entities/user.dart';
+
 import '../../services/auth_service.dart';
 
 class LoginScreen {
@@ -16,10 +17,10 @@ class LoginScreen {
 
     if (success) {
       final user = _authService.currentUser!;
-      print('Welcome, ${user.name}!');
+      print('\nWelcome back, ${user.name}!');
       return user;
     } else {
-      print('Login failed!');
+      print('\nLogin failed! Please check your credentials.');
       return null;
     }
   }

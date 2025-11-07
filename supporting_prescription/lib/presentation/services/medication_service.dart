@@ -4,61 +4,122 @@ import '../../domain/entities/renewal_request.dart';
 import '../../domain/enums/renewal_status.dart';
 
 class MedicationService {
-  void markDoseAsTaken(String doseId) {
-    final doses = JsonHandler.loadDoses();
-    final dose = doses.firstWhere((d) => d.id == doseId);
-    
-    if (!dose.isTaken) {
-      dose.markTaken();
-      JsonHandler.saveDoses(doses);
+  bool markDoseAsTaken(String doseId) {
+    try {
+      final doses = JsonHandler.loadDoses();
+      final doseIndex = doses.indexWhere((d) => d.id == doseId);
+      
+      if (doseIndex == -1) {
+        print('Dose not found');
+        return false;
+      }
+      
+      final dose = doses[doseIndex];
+      if (!dose.isTaken) {
+        dose.markTaken();
+        JsonHandler.saveDoses(doses);
+        print('✅ Dose recorded as taken');
+        return true;
+      } else {
+        print('⚠️ Dose was already taken');
+        return false;
+      }
+    } catch (e) {
+      print('Error marking dose: $e');
+      return false;
     }
   }
   
-  void requestRenewal(String patientId, String prescriptionId) {
-    final renewals = JsonHandler.loadRenewals();
-    
-    final renewal = RenewalRequest(
-      id: JsonHandler.getNextId('renewal'),
-      patientId: patientId,
-      prescriptionId: prescriptionId,
-    );
-    
-    renewals.add(renewal);
-    JsonHandler.saveRenewals(renewals);
+  bool requestRenewal(String patientId, String prescriptionId) {
+    try {
+      final renewals = JsonHandler.loadRenewals();
+      
+      // Check if renewal already exists
+      if (renewals.any((r) => r.patientId == patientId && r.prescriptionId == prescriptionId && r.status == RenewalStatus.pending)) {
+        print('⚠️ Renewal request already pending');
+        return false;
+      }
+      
+      final renewal = RenewalRequest(
+        id: JsonHandler.getNextId('renewal'),
+        patientId: patientId,
+        prescriptionId: prescriptionId,
+        status: RenewalStatus.pending,
+      );
+      
+      renewals.add(renewal);
+      JsonHandler.saveRenewals(renewals);
+      print('✅ Renewal request submitted');
+      return true;
+    } catch (e) {
+      print('Error requesting renewal: $e');
+      return false;
+    }
   }
   
-  void processRenewal(String renewalId, bool approve, String note) {
-    final renewals = JsonHandler.loadRenewals();
-    final renewal = renewals.firstWhere((r) => r.id == renewalId);
-    
-    if (approve) {
-      renewal.approve(note);
-    } else {
-      renewal.deny(note);
+  bool processRenewal(String renewalId, bool approve, String note) {
+    try {
+      final renewals = JsonHandler.loadRenewals();
+      final renewalIndex = renewals.indexWhere((r) => r.id == renewalId);
+      
+      if (renewalIndex == -1) {
+        print('Renewal not found');
+        return false;
+      }
+      
+      final renewal = renewals[renewalIndex];
+      
+      if (approve) {
+        renewal.approve(note);
+        print('✅ Renewal approved');
+      } else {
+        renewal.deny(note);
+        print('❌ Renewal denied');
+      }
+      
+      JsonHandler.saveRenewals(renewals);
+      return true;
+    } catch (e) {
+      print('Error processing renewal: $e');
+      return false;
     }
-    
-    JsonHandler.saveRenewals(renewals);
   }
   
   List<DoseIntake> getTodayDoses(String patientId) {
-    final doses = JsonHandler.loadDoses();
-    final today = DateTime.now();
-    
-    return doses.where((dose) =>
-      dose.scheduledTime.year == today.year &&
-      dose.scheduledTime.month == today.month &&
-      dose.scheduledTime.day == today.day
-    ).toList();
+    try {
+      final doses = JsonHandler.loadDoses();
+      final today = DateTime.now();
+      
+      return doses.where((dose) =>
+        dose.id == patientId &&
+        dose.scheduledTime.year == today.year &&
+        dose.scheduledTime.month == today.month &&
+        dose.scheduledTime.day == today.day
+      ).toList();
+    } catch (e) {
+      print('Error loading today doses: $e');
+      return [];
+    }
   }
   
   List<RenewalRequest> getRenewalRequests(String patientId) {
-    final renewals = JsonHandler.loadRenewals();
-    return renewals.where((r) => r.patientId == patientId).toList();
+    try {
+      final renewals = JsonHandler.loadRenewals();
+      return renewals.where((r) => r.patientId == patientId).toList();
+    } catch (e) {
+      print('Error loading renewals: $e');
+      return [];
+    }
   }
   
   List<RenewalRequest> getPendingRenewals() {
-    final renewals = JsonHandler.loadRenewals();
-    return renewals.where((r) => r.status == RenewalStatus.pending).toList();
+    try {
+      final renewals = JsonHandler.loadRenewals();
+      return renewals.where((r) => r.status == RenewalStatus.pending).toList();
+    } catch (e) {
+      print('Error loading pending renewals: $e');
+      return [];
+    }
   }
 
   bool renewalExists(String renewalId) {
@@ -67,7 +128,45 @@ class MedicationService {
   }
 
   List<DoseIntake> getDoseHistory(String patientId) {
+    try {
+      final doses = JsonHandler.loadDoses();
+      
+      return doses
+          .where((dose) => dose.id == patientId)
+          .toList()
+          ..sort((a, b) => b.scheduledTime.compareTo(a.scheduledTime));
+    } catch (e) {
+      print('Error loading dose history: $e');
+      return [];
+    }
+  }
+  
+  List<DoseIntake> getUpcomingDoses(String patientId, {int daysAhead = 7}) {
+    try {
+      final doses = JsonHandler.loadDoses();
+      final now = DateTime.now();
+      final endDate = now.add(Duration(days: daysAhead));
+      
+      return doses.where((dose) =>
+        dose.id == patientId &&
+        dose.scheduledTime.isAfter(now) &&
+        dose.scheduledTime.isBefore(endDate) &&
+        !dose.isTaken
+      ).toList()..sort((a, b) => a.scheduledTime.compareTo(b.scheduledTime));
+    } catch (e) {
+      print('Error loading upcoming doses: $e');
+      return [];
+    }
+  }
+  
+  // New method to get medication adherence rate
+  double getAdherenceRate(String patientId) {
     final doses = JsonHandler.loadDoses();
-    return doses.where((dose) => dose.id.contains(patientId)).toList();
+    final patientDoses = doses.where((d) => d.id == patientId).toList();
+    
+    if (patientDoses.isEmpty) return 0.0;
+    
+    final takenDoses = patientDoses.where((d) => d.isTaken).length;
+    return (takenDoses / patientDoses.length) * 100;
   }
 }

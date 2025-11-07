@@ -13,55 +13,53 @@ class PharmacistMenu {
   
   void showMenu() {
     while (true) {
-      print('\n--- PHARMACIST DASHBOARD ---');
-      print('1. View Pending Prescriptions');
-      print('2. Dispense Prescription');
-      print('3. View All Prescriptions');
-      print('4. Logout');
+      print('\n=== PHARMACIST DASHBOARD ===');
+      print('Welcome, ${_currentUser.name}');
+      print('1. View & Dispense Pending Prescriptions');
+      print('2. View All Prescriptions');
+      print('3. Logout');
       
-      final choice = _getInput('Choose: ');
+      final choice = _getInput('Choose an option: ');
       
       switch (choice) {
-        case '1': _viewPending(); break;
-        case '2': _dispense(); break;
-        case '3': _viewAll(); break;
-        case '4': return;
+        case '1': _viewAndDispensePending(); break;
+        case '2': _viewAll(); break;
+        case '3': 
+          print('\nLogging out... Goodbye, ${_currentUser.name}!');
+          return;
         default: print('Invalid choice!');
       }
     }
   }
   
-  void _viewPending() {
-    final pending = _prescriptionService.getPrescriptionsByStatus(PrescriptionStatus.pending);
-    
-    print('\n--- Pending Prescriptions ---');
-    if (pending.isEmpty) {
-      print('No pending prescriptions.');
-      return;
-    }
-    
-    for (final p in pending) {
-      final patient = _authService.getPatient(p.patientId);
-      print('${p.id} - Patient: ${patient?.name}');
-    }
-  }
-  
-  void _dispense() {
+  void _viewAndDispensePending() {
     final pending = _prescriptionService.getPrescriptionsByStatus(PrescriptionStatus.pending);
     
     if (pending.isEmpty) {
-      print('No prescriptions to dispense.');
+      print('\nNo pending prescriptions.');
       return;
     }
     
-    _viewPending();
-    final id = _getInput('Prescription ID: ');
-    
-    try {
-      _prescriptionService.dispensePrescription(id);
-      print('Prescription dispensed!');
-    } catch (e) {
-      print('Error: $e');
+    while (true) {
+      print('\n--- Pending Prescriptions ---');
+      for (int i = 0; i < pending.length; i++) {
+        final p = pending[i];
+        final patient = _authService.getPatient(p.patientId);
+        print('${i + 1}. ${p.id} - Patient: ${patient?.name}');
+      }
+      print('${pending.length + 1}. Back to main menu');
+      
+      final choice = int.tryParse(_getInput('\nSelect prescription to dispense: ')) ?? 0;
+      
+      if (choice == pending.length + 1) {
+        return;
+      } else if (choice > 0 && choice <= pending.length) {
+        _prescriptionService.dispensePrescription(pending[choice - 1].id);
+        print('Prescription dispensed!');
+        return; // Go back after dispensing
+      } else {
+        print('Invalid selection!');
+      }
     }
   }
   
@@ -76,10 +74,12 @@ class PharmacistMenu {
     
     for (final p in all) {
       final patient = _authService.getPatient(p.patientId);
-      print('${p.id} - Patient: ${patient?.name} - Status: ${p.status}');
+      final statusIcon = p.status == PrescriptionStatus.pending ? '🟡' : 
+                        p.status == PrescriptionStatus.dispensed ? '✅' : '❌';
+      print('$statusIcon ${p.id} - ${patient?.name} - ${p.status}');
     }
   }
-  
+
   String _getInput(String prompt) {
     stdout.write('$prompt ');
     return stdin.readLineSync()?.trim() ?? '';
