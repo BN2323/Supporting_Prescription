@@ -4,6 +4,7 @@ import 'package:supporting_prescription/domain/entities/prescription.dart';
 import '../../../domain/entities/patient.dart';
 import '../../services/medication_service.dart';
 import '../../services/prescription_service.dart';
+import '../../services/reminder_service.dart';
 
 class PatientMenu {
   final PrescriptionService _prescriptionService;
@@ -14,6 +15,9 @@ class PatientMenu {
   
   void showMenu() {
     while (true) {
+      // Show reminders every time the menu is displayed
+      _showReminders();
+      
       print('\n--- PATIENT DASHBOARD ---');
       print('Welcome, ${_currentUser.name}');
       print('1. View Prescriptions');
@@ -21,7 +25,9 @@ class PatientMenu {
       print('3. Record Medication Taken');
       print('4. Request Renewal');
       print('5. Check Renewal Status');
-      print('6. Logout');
+      print('6. View Medication History & Adherence');
+      print('7. Check Missed Medications');
+      print('8. Logout');
       
       final choice = _getInput('Choose: ');
       
@@ -31,12 +37,19 @@ class PatientMenu {
         case '3': _recordMedication(); break;
         case '4': _requestRenewal(); break;
         case '5': _checkRenewalStatus(); break;
-        case '6': 
+        case '6': _viewMedicationHistory(); break;
+        case '7': _checkMissedMedications(); break;
+        case '8': 
           print('\nLogging out... Take care, ${_currentUser.name}!');
           return;
         default: print('Invalid choice!');
       }
     }
+  }
+  
+  void _showReminders() {
+    // Check for upcoming doses in the next hour
+    ReminderService.checkReminders(_currentUser.id);
   }
   
   void _viewPrescriptions() {
@@ -49,7 +62,9 @@ class PatientMenu {
     }
     
     for (final p in prescriptions) {
-      print('${p.id} - Status: ${p.status} - Date: ${p.dateIssued}');
+      final statusIcon = p.status.toString().contains('pending') ? '🟡' : 
+                        p.status.toString().contains('dispensed') ? '✅' : '❌';
+      print('$statusIcon ${p.id} - Status: ${p.status} - Date: ${p.dateIssued}');
       if (p.medications.isNotEmpty) {
         for (final med in p.medications) {
           print('  💊 ${med.name} ${med.strength}mg - ${med.dose.frequencyPerDay}x/day');
@@ -62,7 +77,6 @@ class PatientMenu {
   }
   
   void _viewTodaysMeds() {
-    // Temporary fix: Since getTodayDoses filters by patientId, let's check all doses
     final allDoses = _medicationService.getTodayDoses(_currentUser.id);
     
     print('\n--- Today\'s Medications ---');
@@ -71,8 +85,8 @@ class PatientMenu {
       print('No medications scheduled for today.');
       print('\nPossible reasons:');
       print('• No active prescriptions with medications');
+      print('• Prescriptions not yet dispensed by pharmacist');
       print('• Medications not scheduled for today');
-      print('• Dose schedule not generated properly');
       return;
     }
     
@@ -83,7 +97,8 @@ class PatientMenu {
       print('\n🟡 PENDING:');
       for (final dose in pending) {
         final time = _formatTime(dose.scheduledTime);
-        print('   $time - ${dose.id}');
+        final medName = _getMedicationName(dose.medicationId);
+        print('   $time - $medName');
       }
     }
     
@@ -91,12 +106,17 @@ class PatientMenu {
       print('\n✅ TAKEN:');
       for (final dose in taken) {
         final time = _formatTime(dose.scheduledTime);
-        print('   $time - ${dose.id}');
+        final medName = _getMedicationName(dose.medicationId);
+        print('   $time - $medName');
       }
     }
     
     // Show summary
-    print('\n📊 Summary: ${taken.length} taken, ${pending.length} pending');
+    print('\n📊 Today\'s Summary: ${taken.length} taken, ${pending.length} pending');
+    
+    // Show adherence rate
+    final adherence = _medicationService.getAdherenceRate(_currentUser.id);
+    print('📈 Your overall adherence rate: ${adherence.toStringAsFixed(1)}%');
   }
   
   void _recordMedication() {
@@ -114,7 +134,8 @@ class PatientMenu {
     for (int i = 0; i < pending.length; i++) {
       final dose = pending[i];
       final time = _formatTime(dose.scheduledTime);
-      print('${i + 1}. $time - ${dose.id}');
+      final medName = _getMedicationName(dose.medicationId);
+      print('${i + 1}. $time - $medName');
     }
     print('${pending.length + 1}. Cancel');
     
@@ -164,12 +185,13 @@ class PatientMenu {
     
     final id = _getInput('\nEnter Prescription ID to renew: ');
     
-    // FIX: Use firstWhere without orElse, handle the exception
+    // Check if prescription exists and belongs to patient
     Prescription? prescription;
-    try {
-      prescription = prescriptions.firstWhere((p) => p.id == id);
-    } catch (e) {
-      prescription = null;
+    for (final p in prescriptions) {
+      if (p.id == id) {
+        prescription = p;
+        break;
+      }
     }
     
     if (prescription == null) {
@@ -184,6 +206,7 @@ class PatientMenu {
       print('❌ Failed to request renewal (may already be pending).');
     }
   }
+  
   void _checkRenewalStatus() {
     final renewals = _medicationService.getRenewalRequests(_currentUser.id);
     
@@ -203,8 +226,79 @@ class PatientMenu {
     }
   }
   
+  void _viewMedicationHistory() {
+    final history = _medicationService.getDoseHistory(_currentUser.id);
+    
+    print('\n--- Medication History (Last 7 Days) ---');
+    if (history.isEmpty) {
+      print('No medication history found.');
+      return;
+    }
+    
+    final now = DateTime.now();
+    final weekAgo = now.subtract(Duration(days: 7));
+    
+    final recentHistory = history.where((dose) => 
+      dose.scheduledTime.isAfter(weekAgo)
+    ).toList();
+    
+    if (recentHistory.isEmpty) {
+      print('No medications in the last 7 days.');
+      return;
+    }
+    
+    String currentDate = '';
+    for (final dose in recentHistory) {
+      final date = _formatDate(dose.scheduledTime);
+      if (date != currentDate) {
+        currentDate = date;
+        print('\n📅 $currentDate:');
+      }
+      
+      final status = dose.isTaken ? '✅' : '❌';
+      final time = _formatTime(dose.scheduledTime);
+      final medName = _getMedicationName(dose.medicationId);
+      print('   $status $time - $medName');
+    }
+    
+    final takenCount = recentHistory.where((d) => d.isTaken).length;
+    final totalCount = recentHistory.length;
+    final adherence = totalCount > 0 ? (takenCount / totalCount * 100) : 0;
+    
+    print('\n📊 7-Day Adherence: ${adherence.toStringAsFixed(1)}% ($takenCount/$totalCount doses taken)');
+  }
+  
+  void _checkMissedMedications() {
+    ReminderService.showMissedDoses(_currentUser.id);
+  }
+  
+  String _getMedicationName(String medicationId) {
+    try {
+      final prescriptions = _prescriptionService.getAllPrescriptions();
+      for (final prescription in prescriptions) {
+        for (final medication in prescription.medications) {
+          if (medication.id == medicationId) {
+            return '${medication.name} ${medication.strength}mg';
+          }
+        }
+      }
+    } catch (e) {
+      print('Error getting medication name: $e');
+    }
+    return 'Medication $medicationId';
+  }
+  
+  String _formatDate(DateTime dateTime) {
+    return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
+  }
+  
   String _formatTime(DateTime dateTime) {
-    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    final hour = dateTime.hour;
+    final minute = dateTime.minute;
+    final period = hour >= 12 ? 'PM' : 'AM';
+    final displayHour = hour > 12 ? hour - 12 : hour;
+    
+    return '${displayHour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $period';
   }
   
   String _getInput(String prompt) {

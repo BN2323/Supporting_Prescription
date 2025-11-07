@@ -1,18 +1,18 @@
 import 'dart:io';
 import 'package:supporting_prescription/domain/enums/role.dart';
+import 'package:supporting_prescription/domain/entities/user.dart';
+import 'package:supporting_prescription/domain/entities/doctor.dart';
+import 'package:supporting_prescription/domain/entities/patient.dart';
+import 'package:supporting_prescription/domain/entities/pharmacist.dart';
 import 'package:supporting_prescription/presentation/services/auth_service.dart';
 import 'package:supporting_prescription/presentation/services/medication_service.dart';
 import 'package:supporting_prescription/presentation/services/prescription_service.dart';
+import 'package:supporting_prescription/presentation/services/reminder_service.dart';
 import 'package:supporting_prescription/presentation/ui/screens/doctor_dashboard.dart';
 import 'package:supporting_prescription/presentation/ui/screens/login_screen.dart';
 import 'package:supporting_prescription/presentation/ui/screens/patient_dashboard.dart';
 import 'package:supporting_prescription/presentation/ui/screens/pharmacist_dashboard.dart';
 import 'package:supporting_prescription/presentation/ui/screens/registration_screen.dart';
-
-import 'domain/entities/user.dart';
-import 'domain/entities/doctor.dart';
-import 'domain/entities/patient.dart';
-import 'domain/entities/pharmacist.dart';
 
 class MainMenu {
   final AuthService _authService;
@@ -111,6 +111,7 @@ class MainMenu {
           _authService,
           user as Doctor,
         );
+        print('\n👨‍⚕️ Welcome back, Dr. ${user.name}!');
         doctorMenu.showMenu();
         break;
       case Role.patient:
@@ -119,6 +120,15 @@ class MainMenu {
           _medicationService,
           user as Patient,
         );
+        
+        // Show welcome message with reminders for patients
+        print('\n👋 Welcome back, ${user.name}!');
+        print('Checking your medication reminders...\n');
+        
+        // Show upcoming and missed dose reminders
+        ReminderService.checkReminders(user.id);
+        ReminderService.showMissedDoses(user.id);
+        
         patientMenu.showMenu();
         break;
       case Role.pharmacist:
@@ -127,6 +137,7 @@ class MainMenu {
           _authService,
           user as Pharmacist,
         );
+        print('\n💊 Welcome back, ${user.name}!');
         pharmacistMenu.showMenu();
         break;
     }
