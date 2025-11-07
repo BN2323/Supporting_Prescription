@@ -91,7 +91,12 @@ class DoctorMenu {
   }
 
   void _viewAndManagePrescriptions() {
-    final prescriptions = _prescriptionService.getPrescriptionsByDoctor(_currentUser.id);
+    // Always get fresh data from service
+    List<Prescription> getCurrentPrescriptions() {
+      return _prescriptionService.getPrescriptionsByDoctor(_currentUser.id);
+    }
+    
+    var prescriptions = getCurrentPrescriptions();
     
     if (prescriptions.isEmpty) {
       print('\nNo prescriptions found.');
@@ -122,6 +127,17 @@ class DoctorMenu {
   }
 
   void _viewPrescriptionDetails(Prescription prescription) {
+
+    // Helper to get fresh prescription data
+    Prescription? getCurrentPrescription() {
+      return _prescriptionService.getPrescription(prescription.id);
+    }
+    
+    var currentPrescription = getCurrentPrescription();
+    if (currentPrescription == null) {
+      print('Prescription not found!');
+      return;
+    }
     while (true) {
       final patient = _authService.getPatient(prescription.patientId);
       
@@ -168,29 +184,73 @@ class DoctorMenu {
     print('\n--- Add Medication ---');
     
     final name = _getInput('Medication Name: ');
-    final strength = double.tryParse(_getInput('Strength (mg): ')) ?? 0;
+    
+    // Better input handling for numbers
+    final strengthInput = _getInput('Strength (mg): ');
+    final strength = double.tryParse(strengthInput) ?? 0.0;
+    if (strength <= 0) {
+      print('❌ Invalid strength! Using default 1.0 mg');
+    }
     
     print('Available Forms:');
     for (int i = 0; i < MedForm.values.length; i++) {
       print('${i + 1}. ${MedForm.values[i]}');
     }
     
-    final formIndex = int.tryParse(_getInput('Select form: ')) ?? 1;
+    final formInput = _getInput('Select form: ');
+    final formIndex = int.tryParse(formInput) ?? 1;
     final form = formIndex > 0 && formIndex <= MedForm.values.length 
         ? MedForm.values[formIndex - 1] 
         : MedForm.tablet;
     
-    final amount = double.tryParse(_getInput('Dose Amount (mg): ')) ?? 0;
-    final frequency = int.tryParse(_getInput('Frequency per day: ')) ?? 1;
-    final duration = int.tryParse(_getInput('Duration (days): ')) ?? 7;
+    final amountInput = _getInput('Dose Amount (mg): ');
+    final amount = double.tryParse(amountInput) ?? 0.0;
+    if (amount <= 0) {
+      print('❌ Invalid amount! Using default 1.0 mg');
+    }
+    
+    final frequencyInput = _getInput('Frequency per day: ');
+    final frequency = int.tryParse(frequencyInput) ?? 1;
+    if (frequency <= 0) {
+      print('❌ Invalid frequency! Using default 1x per day');
+    }
+    
+    final durationInput = _getInput('Duration (days): ');
+    final duration = int.tryParse(durationInput) ?? 7;
+    if (duration <= 0) {
+      print('❌ Invalid duration! Using default 7 days');
+    }
+    
     final instructions = _getInput('Instructions: ');
+    
+    print('\nAdding medication with details:');
+    print('Name: $name');
+    print('Strength: ${strength}mg');
+    print('Form: $form');
+    print('Dose Amount: ${amount}mg');
+    print('Frequency: ${frequency}x per day');
+    print('Duration: $duration days');
+    print('Instructions: $instructions');
+    
+    final confirm = _getInput('\nConfirm adding this medication? (y/n): ');
+    if (confirm.toLowerCase() != 'y') {
+      print('Medication addition cancelled.');
+      return;
+    }
     
     final success = _prescriptionService.addMedicationToPrescription(
       prescriptionId, name, strength, form, amount, frequency, duration, instructions
     );
     
     if (success) {
-      print('✅ Medication added!');
+      print('✅ Medication added successfully!');
+      
+      // Verify the medication was actually added
+      final updatedPrescription = _prescriptionService.getPrescription(prescriptionId);
+      if (updatedPrescription != null && updatedPrescription.medications.isNotEmpty) {
+        final lastMed = updatedPrescription.medications.last;
+        print('✅ Verified: ${lastMed.name} added to prescription');
+      }
     } else {
       print('❌ Failed to add medication');
     }
