@@ -1,1 +1,12 @@
-{"renewals":[{"id":"REN1762543674789","patientId":"PAT1762542489290","prescriptionId":"RX1762542748502","requestedDate":"2025-11-08T02:27:54.789860","status":"pending","doctorNote":null}]}
+{
+  "renewals": [
+    {
+      "id": "REN1762543674789",
+      "patientId": "PAT1762542489290",
+      "prescriptionId": "RX1762542748502",
+      "requestedDate": "2025-11-08T02:27:54.789860",
+      "status": "pending",
+      "doctorNote": null
+    }
+  ]
+}
