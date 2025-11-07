@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:io/stdio.dart';
 
 import 'domain/entities/doctor.dart';
 import 'domain/entities/patient.dart';
