@@ -1,3 +1,6 @@
+import 'package:supporting_prescription/domain/entities/prescription.dart';
+import 'package:supporting_prescription/domain/enums/prescription_status.dart';
+
 import '../../data/json_handler.dart';
 import '../../domain/entities/dose_intake.dart';
 import '../../domain/entities/renewal_request.dart';
@@ -15,6 +18,16 @@ class MedicationService {
       }
       
       final dose = doses[doseIndex];
+
+      // Check if the medication's prescription is dispensed
+      final prescriptions = JsonHandler.loadPrescriptions();
+      final prescription = _findPrescriptionForMedication(dose.medicationId, prescriptions);
+      
+      if (prescription == null || prescription.status != PrescriptionStatus.dispensed) {
+        print('❌ Cannot take medication - prescription not dispensed yet');
+        return false;
+      }
+      
       if (!dose.isTaken) {
         dose.markTaken();
         JsonHandler.saveDoses(doses);
@@ -28,6 +41,17 @@ class MedicationService {
       print('Error marking dose: $e');
       return false;
     }
+  }
+  
+  // Helper method to find which prescription contains a medication
+  Prescription? _findPrescriptionForMedication(String medicationId, List<Prescription> prescriptions) {
+    for (final prescription in prescriptions) {
+      final hasMedication = prescription.medications.any((med) => med.id == medicationId);
+      if (hasMedication) {
+        return prescription;
+      }
+    }
+    return null;
   }
   
   bool requestRenewal(String patientId, String prescriptionId) {

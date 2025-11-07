@@ -73,7 +73,7 @@ class PrescriptionService {
       JsonHandler.savePrescriptions(prescriptions);
       
       // Generate and save dose intake schedule
-      _generateDoseSchedule(medication);
+      _generateDoseSchedule(medication, prescription.patientId);
       return true;
     } catch (e) {
       print('Error adding medication: $e');
@@ -81,10 +81,10 @@ class PrescriptionService {
     }
   }
   
-  void _generateDoseSchedule(Medication medication) {
+  void _generateDoseSchedule(Medication medication, String patientId) {
     try {
       final doses = JsonHandler.loadDoses();
-      final schedule = medication.generateSchedule();
+      final schedule = medication.generateSchedule(patientId);
       doses.addAll(schedule);
       JsonHandler.saveDoses(doses); 
     } catch (e) {

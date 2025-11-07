@@ -1,6 +1,6 @@
-import '../enums/medication_form.dart';
-import 'dose.dart';
-import 'dose_intake.dart';
+import 'package:supporting_prescription/domain/entities/dose.dart';
+import 'package:supporting_prescription/domain/entities/dose_intake.dart';
+import 'package:supporting_prescription/domain/enums/medication_form.dart';
 
 class Medication {
   final String id;
@@ -17,7 +17,7 @@ class Medication {
     required this.dose,
   });
 
-  List<DoseIntake> generateSchedule() {
+  List<DoseIntake> generateSchedule(String patientId) {
     final schedules = <DoseIntake>[];
     int doseCount = 0;
 
@@ -34,7 +34,12 @@ class Medication {
         );
 
         schedules.add(
-          DoseIntake(id: '${id}_D${doseCount++}', scheduledTime: scheduledTime),
+          DoseIntake(
+            id: '${id}_D${doseCount++}',
+            medicationId: id,
+            patientId: patientId,
+            scheduledTime: scheduledTime,
+          ),
         );
       }
     }
