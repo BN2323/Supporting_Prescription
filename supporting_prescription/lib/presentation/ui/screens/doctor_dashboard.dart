@@ -91,7 +91,7 @@ class DoctorMenu {
   }
 
   void _viewAndManagePrescriptions() {
-    // Always get fresh data from service
+    // Helper to get fresh data
     List<Prescription> getCurrentPrescriptions() {
       return _prescriptionService.getPrescriptionsByDoctor(_currentUser.id);
     }
@@ -105,12 +105,27 @@ class DoctorMenu {
     
     while (true) {
       print('\n--- My Prescriptions ---');
+      
+      // Refresh the list to get any updates
+      prescriptions = getCurrentPrescriptions();
+      
       for (int i = 0; i < prescriptions.length; i++) {
         final p = prescriptions[i];
         final patient = _authService.getPatient(p.patientId);
         final statusIcon = p.status == PrescriptionStatus.pending ? '🟡' : 
                           p.status == PrescriptionStatus.dispensed ? '✅' : '❌';
         print('${i + 1}. $statusIcon ${p.id} - ${patient?.name} - ${p.status}');
+        
+        // Show medications count for quick overview
+        if (p.medications.isNotEmpty) {
+          print('   Medications: ${p.medications.length}');
+          for (final med in p.medications.take(2)) { // Show first 2 medications
+            print('     💊 ${med.name}');
+          }
+          if (p.medications.length > 2) {
+            print('     ... and ${p.medications.length - 2} more');
+          }
+        }
       }
       print('${prescriptions.length + 1}. Back to main menu');
       
@@ -120,14 +135,14 @@ class DoctorMenu {
         return;
       } else if (choice > 0 && choice <= prescriptions.length) {
         _viewPrescriptionDetails(prescriptions[choice - 1]);
+        // Refresh list after returning from details view
+        prescriptions = getCurrentPrescriptions();
       } else {
         print('Invalid selection!');
       }
     }
   }
-
   void _viewPrescriptionDetails(Prescription prescription) {
-
     // Helper to get fresh prescription data
     Prescription? getCurrentPrescription() {
       return _prescriptionService.getPrescription(prescription.id);
@@ -138,21 +153,24 @@ class DoctorMenu {
       print('Prescription not found!');
       return;
     }
+    
     while (true) {
-      final patient = _authService.getPatient(prescription.patientId);
+      // Use currentPrescription instead of the original prescription parameter
+      final patient = _authService.getPatient(currentPrescription!.id);
       
       print('\n--- Prescription Details ---');
-      print('ID: ${prescription.id}');
+      print('ID: ${currentPrescription.id}');
       print('Patient: ${patient?.name}');
-      print('Status: ${prescription.status}');
-      print('Date: ${prescription.dateIssued}');
-      print('DEA: ${prescription.deaNumber}');
+      print('Status: ${currentPrescription.status}');
+      print('Date: ${currentPrescription.dateIssued}');
+      print('DEA: ${currentPrescription.deaNumber}');
       
-      if (prescription.medications.isNotEmpty) {
+      if (currentPrescription.medications.isNotEmpty) {
         print('\nMedications:');
-        for (final med in prescription.medications) {
+        for (final med in currentPrescription.medications) {
           print('  💊 ${med.name} ${med.strength}mg - ${med.form}');
           print('     Dose: ${med.dose.amount}mg, ${med.dose.frequencyPerDay}x/day');
+          print('     Instructions: ${med.dose.instructions}');
         }
       } else {
         print('\nNo medications added.');
@@ -167,10 +185,16 @@ class DoctorMenu {
       
       switch (choice) {
         case '1': 
-          _addMedicationToPrescription(prescription.id);
+          _addMedicationToPrescription(currentPrescription.id);
+          // Reload the prescription after adding medication
+          currentPrescription = getCurrentPrescription();
+          if (currentPrescription == null) {
+            print('Error: Prescription not found after update!');
+            return;
+          }
           break;
         case '2': 
-          _cancelPrescription(prescription.id);
+          _cancelPrescription(currentPrescription.id);
           return; // Go back to list after cancellation
         case '3': 
           return;
@@ -179,7 +203,6 @@ class DoctorMenu {
       }
     }
   }
-
   void _addMedicationToPrescription(String prescriptionId) {
     print('\n--- Add Medication ---');
     
