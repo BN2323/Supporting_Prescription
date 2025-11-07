@@ -1,12 +1,13 @@
 import 'dart:io';
-import 'dart:io/stdio.dart';
 import 'package:supporting_prescription/domain/enums/role.dart';
 import 'package:supporting_prescription/presentation/services/auth_service.dart';
 import 'package:supporting_prescription/presentation/services/medication_service.dart';
 import 'package:supporting_prescription/presentation/services/prescription_service.dart';
 import 'package:supporting_prescription/presentation/ui/screens/doctor_dashboard.dart';
 import 'package:supporting_prescription/presentation/ui/screens/login_screen.dart';
+import 'package:supporting_prescription/presentation/ui/screens/patient_dashboard.dart';
 import 'package:supporting_prescription/presentation/ui/screens/pharmacist_dashboard.dart';
+import 'package:supporting_prescription/presentation/ui/screens/registration_screen.dart';
 
 import 'domain/entities/user.dart';
 import 'domain/entities/doctor.dart';
