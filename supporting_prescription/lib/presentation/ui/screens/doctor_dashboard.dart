@@ -25,7 +25,7 @@ class DoctorMenu {
   void showMenu() {
     while (true) {
       print('\n=== DOCTOR DASHBOARD ===');
-      print('Welcome, ${_currentUser.name}');
+      print('Welcome, Dr. ${_currentUser.name}');
       print('1. Create Prescription');
       print('2. View & Manage Prescriptions');
       print('3. Manage Renewal Requests');
@@ -40,7 +40,7 @@ class DoctorMenu {
         case '3': _manageRenewals(); break;
         case '4': _viewPatients(); break;
         case '5': 
-          print('\nLogging out... Goodbye, ${_currentUser.name}!');
+          print('\nLogging out... Goodbye, Dr. ${_currentUser.name}!');
           return;
         default: print('Invalid choice!');
       }
@@ -89,8 +89,7 @@ class DoctorMenu {
       print('Error: $e');
     }
   }
-
-  void _viewAndManagePrescriptions() {
+void _viewAndManagePrescriptions() {
     // Helper to get fresh data
     List<Prescription> getCurrentPrescriptions() {
       return _prescriptionService.getPrescriptionsByDoctor(_currentUser.id);
@@ -203,7 +202,7 @@ class DoctorMenu {
       }
     }
   }
-  void _addMedicationToPrescription(String prescriptionId) {
+void _addMedicationToPrescription(String prescriptionId) {
     print('\n--- Add Medication ---');
     
     final name = _getInput('Medication Name: ');
@@ -315,8 +314,7 @@ class DoctorMenu {
     _medicationService.processRenewal(renewalId, decision.toLowerCase() == 'y', notes);
     print('Renewal processed!');
   }
-
-  void _viewPatients() {
+void _viewPatients() {
     final patients = _authService.getPatients();
     
     print('\n--- Patients ---');

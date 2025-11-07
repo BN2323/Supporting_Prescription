@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:supporting_prescription/domain/entities/dose_intake.dart';
 import 'package:supporting_prescription/domain/entities/prescription.dart';
+import 'package:supporting_prescription/domain/enums/prescription_status.dart';
 
 import '../../../domain/entities/patient.dart';
 import '../../services/medication_service.dart';
@@ -90,11 +92,25 @@ class PatientMenu {
       return;
     }
     
-    final pending = allDoses.where((d) => !d.isTaken).toList();
-    final taken = allDoses.where((d) => d.isTaken).toList();
+    // Separate doses by prescription status
+    final availableDoses = <DoseIntake>[];
+    final pendingPrescriptionDoses = <DoseIntake>[];
     
+    for (final dose in allDoses) {
+      final prescription = _getPrescriptionForDose(dose);
+      if (prescription?.status == PrescriptionStatus.dispensed) {
+        availableDoses.add(dose);
+      } else {
+        pendingPrescriptionDoses.add(dose);
+      }
+    }
+    
+    final pending = availableDoses.where((d) => !d.isTaken).toList();
+    final taken = availableDoses.where((d) => d.isTaken).toList();
+    
+    // Show available medications (from dispensed prescriptions)
     if (pending.isNotEmpty) {
-      print('\n🟡 PENDING:');
+      print('\n🟡 AVAILABLE - READY TO TAKE:');
       for (final dose in pending) {
         final time = _formatTime(dose.scheduledTime);
         final medName = _getMedicationName(dose.medicationId);
@@ -111,41 +127,94 @@ class PatientMenu {
       }
     }
     
-    // Show summary
-    print('\n📊 Today\'s Summary: ${taken.length} taken, ${pending.length} pending');
+    // Show pending prescription medications (not yet dispensed)
+    if (pendingPrescriptionDoses.isNotEmpty) {
+      print('\n⏳ PENDING PRESCRIPTION - NOT YET AVAILABLE:');
+      for (final dose in pendingPrescriptionDoses) {
+        final time = _formatTime(dose.scheduledTime);
+        final medName = _getMedicationName(dose.medicationId);
+        final prescription = _getPrescriptionForDose(dose);
+        final status = prescription?.status.toString().split('.').last ?? 'pending';
+        print('   $time - $medName (Status: $status)');
+      }
+      print('   💡 These medications will be available after pharmacist dispenses your prescription');
+    }
     
-    // Show adherence rate
-    final adherence = _medicationService.getAdherenceRate(_currentUser.id);
-    print('📈 Your overall adherence rate: ${adherence.toStringAsFixed(1)}%');
+    // Show summary
+    print('\n📊 Today\'s Summary:');
+    print('   • ${taken.length} taken');
+    print('   • ${pending.length} available to take');
+    print('   • ${pendingPrescriptionDoses.length} waiting for prescription approval');
+    
+    // Show adherence rate only for available medications
+    if (availableDoses.isNotEmpty) {
+      final adherence = _medicationService.getAdherenceRate(_currentUser.id);
+      print('📈 Your overall adherence rate: ${adherence.toStringAsFixed(1)}%');
+    }
   }
-  
+
+  // Helper method to find prescription for a dose
+  Prescription? _getPrescriptionForDose(DoseIntake dose) {
+    try {
+      final prescriptions = _prescriptionService.getAllPrescriptions();
+      for (final prescription in prescriptions) {
+        for (final medication in prescription.medications) {
+          if (medication.id == dose.medicationId) {
+            return prescription;
+          }
+        }
+      }
+    } catch (e) {
+      print('Error finding prescription for dose: $e');
+    }
+    return null;
+  }
+
   void _recordMedication() {
     final allDoses = _medicationService.getTodayDoses(_currentUser.id);
-    final pending = allDoses.where((d) => !d.isTaken).toList();
     
-    if (pending.isEmpty) {
-      print('\n🎉 All medications for today have been taken!');
+    // Filter only doses from dispensed prescriptions
+    final availableDoses = allDoses.where((dose) {
+      final prescription = _getPrescriptionForDose(dose);
+      return prescription?.status == PrescriptionStatus.dispensed && !dose.isTaken;
+    }).toList();
+    
+    if (availableDoses.isEmpty) {
+      print('\nNo medications available to take right now.');
+      
+      // Check if there are pending prescription doses
+      final pendingDoses = allDoses.where((dose) {
+        final prescription = _getPrescriptionForDose(dose);
+        return prescription?.status != PrescriptionStatus.dispensed && !dose.isTaken;
+      }).toList();
+      
+      if (pendingDoses.isNotEmpty) {
+        print('💡 You have ${pendingDoses.length} medications waiting for prescription approval.');
+        print('   Please wait for the pharmacist to dispense your prescription.');
+      } else {
+        print('🎉 All medications for today have been taken!');
+      }
       return;
     }
     
     print('\n--- Record Medication Taken ---');
     print('Select medication to mark as taken:');
     
-    for (int i = 0; i < pending.length; i++) {
-      final dose = pending[i];
+    for (int i = 0; i < availableDoses.length; i++) {
+      final dose = availableDoses[i];
       final time = _formatTime(dose.scheduledTime);
       final medName = _getMedicationName(dose.medicationId);
       print('${i + 1}. $time - $medName');
     }
-    print('${pending.length + 1}. Cancel');
+    print('${availableDoses.length + 1}. Cancel');
     
     final choice = int.tryParse(_getInput('\nSelect dose: ')) ?? 0;
     
-    if (choice == pending.length + 1) {
+    if (choice == availableDoses.length + 1) {
       print('Cancelled.');
       return;
-    } else if (choice > 0 && choice <= pending.length) {
-      final success = _medicationService.markDoseAsTaken(pending[choice - 1].id);
+    } else if (choice > 0 && choice <= availableDoses.length) {
+      final success = _medicationService.markDoseAsTaken(availableDoses[choice - 1].id);
       if (success) {
         print('✅ Medication recorded as taken!');
       } else {
@@ -155,7 +224,6 @@ class PatientMenu {
       print('Invalid selection!');
     }
   }
-  
   void _requestRenewal() {
     final prescriptions = _prescriptionService.getPrescriptionsByPatient(_currentUser.id);
     

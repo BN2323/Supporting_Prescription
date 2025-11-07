@@ -13,8 +13,11 @@ class DoseIntake {
     this.isTaken = false,
   });
   
-  bool markTaken() {
-    isTaken = true;
-    return isTaken;
+   bool markTaken() {
+    if (!isTaken) {
+      isTaken = true;
+      return true;
+    }
+    return false;
   }
 }

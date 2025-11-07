@@ -79,6 +79,8 @@ void main() {
     test('Test DoseIntake CRUD Operations', () {
       final dose = DoseIntake(
         id: 'DOSE_000001',
+        patientId: 'PAT_000001', // Added required parameter
+        medicationId: 'MED_000001', // Added required parameter
         scheduledTime: DateTime(2024, 1, 1, 8, 0),
         isTaken: false,
       );
@@ -88,6 +90,8 @@ void main() {
       final loadedDoses = JsonHandler.loadDoses();
       expect(loadedDoses.length, 1);
       expect(loadedDoses[0].id, 'DOSE_000001');
+      expect(loadedDoses[0].patientId, 'PAT_000001'); // Verify patientId
+      expect(loadedDoses[0].medicationId, 'MED_000001'); // Verify medicationId
       expect(loadedDoses[0].isTaken, false);
     });
 
@@ -118,6 +122,57 @@ void main() {
       expect(prescriptions, isEmpty);
       expect(doses, isEmpty);
       expect(renewals, isEmpty);
+    });
+
+    test('Test Update Operations', () {
+      // Test updating existing data
+      final initialDose = DoseIntake(
+        id: 'DOSE_000001',
+        patientId: 'PAT_000001',
+        medicationId: 'MED_000001',
+        scheduledTime: DateTime(2024, 1, 1, 8, 0),
+        isTaken: false,
+      );
+
+      JsonHandler.saveDoses([initialDose]);
+
+      // Load, modify and save again
+      final loadedDoses = JsonHandler.loadDoses();
+      final doseToUpdate = loadedDoses.first;
+      doseToUpdate.markTaken(); // Mark as taken
+      
+      JsonHandler.saveDoses(loadedDoses);
+
+      // Verify the update persisted
+      final updatedDoses = JsonHandler.loadDoses();
+      expect(updatedDoses[0].isTaken, true);
+    });
+
+    test('Test Multiple Items CRUD', () {
+      // Test with multiple items
+      final doses = [
+        DoseIntake(
+          id: 'DOSE_000001',
+          patientId: 'PAT_000001',
+          medicationId: 'MED_000001',
+          scheduledTime: DateTime(2024, 1, 1, 8, 0),
+          isTaken: false,
+        ),
+        DoseIntake(
+          id: 'DOSE_000002',
+          patientId: 'PAT_000001',
+          medicationId: 'MED_000001',
+          scheduledTime: DateTime(2024, 1, 1, 20, 0),
+          isTaken: false,
+        ),
+      ];
+
+      JsonHandler.saveDoses(doses);
+
+      final loadedDoses = JsonHandler.loadDoses();
+      expect(loadedDoses.length, 2);
+      expect(loadedDoses[0].id, 'DOSE_000001');
+      expect(loadedDoses[1].id, 'DOSE_000002');
     });
   });
 }

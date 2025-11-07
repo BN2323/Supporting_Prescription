@@ -1,5 +1,7 @@
 import 'package:supporting_prescription/data/json_handler.dart';
 import 'package:supporting_prescription/domain/entities/dose_intake.dart';
+import 'package:supporting_prescription/domain/entities/prescription.dart';
+import 'package:supporting_prescription/domain/enums/prescription_status.dart';
 
 class ReminderService {
   static void checkReminders(String patientId) {
@@ -46,30 +48,71 @@ class ReminderService {
     print('\n🔔 MEDICATION REMINDERS');
     print('=' * 50);
     
+    int availableReminders = 0;
+    
     for (final dose in upcomingDoses) {
       final timeLeft = dose.scheduledTime.difference(DateTime.now());
       final minutesLeft = timeLeft.inMinutes;
       
-      String urgency;
-      if (minutesLeft <= 15) {
-        urgency = '🚨 URGENT';
-      } else if (minutesLeft <= 30) {
-        urgency = '⚠️ SOON';
+      // Check if prescription is dispensed
+      final prescription = _getPrescriptionForDose(dose);
+      final isAvailable = prescription?.status == PrescriptionStatus.dispensed;
+      
+      String statusIcon;
+      String statusText;
+      
+      if (isAvailable) {
+        availableReminders++;
+        if (minutesLeft <= 15) {
+          statusIcon = '🚨 URGENT';
+          statusText = 'READY TO TAKE';
+        } else if (minutesLeft <= 30) {
+          statusIcon = '⚠️ SOON';
+          statusText = 'READY TO TAKE';
+        } else {
+          statusIcon = '📋 UPCOMING';
+          statusText = 'READY TO TAKE';
+        }
       } else {
-        urgency = '📋 UPCOMING';
+        statusIcon = '⏳ PENDING';
+        statusText = 'AWAITING PRESCRIPTION';
       }
       
-      print('$urgency - ${_formatTime(dose.scheduledTime)}');
+      print('$statusIcon - ${_formatTime(dose.scheduledTime)}');
       print('   Medication: ${_getMedicationNameFromDose(dose)}');
       print('   Time: ${_formatTime(dose.scheduledTime)} (in $minutesLeft minutes)');
-      print('   Dose ID: ${dose.id}');
+      print('   Status: $statusText');
+      if (!isAvailable) {
+        print('   Note: Will be available after pharmacist dispenses prescription');
+      }
       print('   ${'-' * 40}');
+    }
+    
+    if (availableReminders == 0 && upcomingDoses.isNotEmpty) {
+      print('\n💡 All your upcoming medications are waiting for prescription approval.');
+      print('   The pharmacist needs to dispense your prescription first.');
     }
     
     print('\n💡 Tip: Take your medications on time for best results!');
     print('=' * 50);
   }
-  
+
+  // Add this helper method to ReminderService
+  static Prescription? _getPrescriptionForDose(DoseIntake dose) {
+    try {
+      final prescriptions = JsonHandler.loadPrescriptions();
+      for (final prescription in prescriptions) {
+        for (final medication in prescription.medications) {
+          if (medication.id == dose.medicationId) {
+            return prescription;
+          }
+        }
+      }
+    } catch (e) {
+      print('Error finding prescription for dose: $e');
+    }
+    return null;
+  }
   static String _getMedicationNameFromDose(DoseIntake dose) {
     // This would need access to prescription data to get medication names
     // For now, we'll extract from the dose ID

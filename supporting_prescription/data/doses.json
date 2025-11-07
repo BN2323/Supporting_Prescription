@@ -1,1 +1,1 @@
-{"doses":[{"id":"SOME_OTHER_ID","isTaken":true,"scheduledTime":"2025-11-08T04:16:22.277391"}]}
+{"doses":[{"id":"DOSE_1","medicationId":"MED_000001","patientId":"PAT_000001","isTaken":false,"scheduledTime":"2025-11-08T08:30:52.711149"},{"id":"DOSE_2","medicationId":"MED_000001","patientId":"PAT_000001","isTaken":false,"scheduledTime":"2025-11-08T04:30:52.711149"},{"id":"DOSE_3","medicationId":"MED_000001","patientId":"PAT_000001","isTaken":true,"scheduledTime":"2025-11-08T10:30:52.711149"}]}
