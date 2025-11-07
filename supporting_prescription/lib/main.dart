@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:supporting_prescription/presentation/ui/screens/registration_screen.dart';
+
 import 'domain/entities/doctor.dart';
 import 'domain/entities/patient.dart';
 import 'domain/enums/role.dart';
