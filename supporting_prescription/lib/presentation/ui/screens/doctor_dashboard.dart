@@ -25,7 +25,7 @@ class DoctorMenu {
   void showMenu() {
     while (true) {
       print('\n=== DOCTOR DASHBOARD ===');
-      print('Welcome, Dr. ${_currentUser.name}');
+      print('Welcome, ${_currentUser.name}');
       print('1. Create Prescription');
       print('2. View & Manage Prescriptions');
       print('3. Manage Renewal Requests');
@@ -40,7 +40,7 @@ class DoctorMenu {
         case '3': _manageRenewals(); break;
         case '4': _viewPatients(); break;
         case '5': 
-          print('\nLogging out... Goodbye, Dr. ${_currentUser.name}!');
+          print('\nLogging out... Goodbye, ${_currentUser.name}!');
           return;
         default: print('Invalid choice!');
       }

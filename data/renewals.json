@@ -1,12 +1,1 @@
-{
-  "renewals": [
-    {
-      "id": "REN1762543674789",
-      "patientId": "PAT1762542489290",
-      "prescriptionId": "RX1762542748502",
-      "requestedDate": "2025-11-08T02:27:54.789860",
-      "status": "pending",
-      "doctorNote": null
-    }
-  ]
-}
+{"renewals":[{"id":"REN1762543674789","patientId":"PAT1762542489290","prescriptionId":"RX1762542748502","requestedDate":"2025-11-08T04:38:06.484028","status":"denied","doctorNote":null},{"id":"REN_000003","patientId":"PAT_000001","prescriptionId":"","requestedDate":"2025-11-08T04:38:06.485025","status":"pending","doctorNote":null}]}
