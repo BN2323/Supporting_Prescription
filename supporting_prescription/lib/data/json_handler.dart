@@ -10,7 +10,7 @@ import './mappers/dose_intake_mapper.dart';
 import './mappers/renewal_mapper.dart';
 
 class JsonHandler {
-  static const String _dataDir = 'supporting_prescription/lib/data/storages';
+  static const String _dataDir = 'data/storages';
   static const String _sequenceFile = '$_dataDir/sequences.json';
   
   static final Map<String, int> _sequences = {};
