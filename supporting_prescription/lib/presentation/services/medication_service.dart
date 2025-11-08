@@ -81,8 +81,10 @@ class MedicationService {
     }
   }
   
+  // In MedicationService class
   bool processRenewal(String renewalId, bool approve, String note) {
     try {
+      print('note: $note');
       final renewals = JsonHandler.loadRenewals();
       final renewalIndex = renewals.indexWhere((r) => r.id == renewalId);
       
@@ -101,6 +103,8 @@ class MedicationService {
         print('❌ Renewal denied');
       }
       
+      print('renuew: ${renewal.doctorNote}');
+      // FIX: Save the updated renewals list back to JSON
       JsonHandler.saveRenewals(renewals);
       return true;
     } catch (e) {
@@ -130,6 +134,7 @@ class MedicationService {
   List<RenewalRequest> getRenewalRequests(String patientId) {
     try {
       final renewals = JsonHandler.loadRenewals();
+      print('renewals out: ${renewals is RenewalRequest}');
       return renewals.where((r) => r.patientId == patientId).toList();
     } catch (e) {
       print('Error loading renewals: $e');

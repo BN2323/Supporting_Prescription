@@ -5,7 +5,7 @@
       "name": "Dr. Sarah Johnson",
       "phone": "555-0101",
       "password": "doc123",
-      "role": "doctor",
+      "role": "Role.doctor",
       "licenseNumber": "MED123456",
       "specialization": "Cardiology"
     },
@@ -14,7 +14,7 @@
       "name": "Dr. Michael Chen",
       "phone": "555-0102",
       "password": "doc456",
-      "role": "doctor",
+      "role": "Role.doctor",
       "licenseNumber": "MED789012",
       "specialization": "Pediatrics"
     },
@@ -23,37 +23,27 @@
       "name": "John Smith",
       "phone": "555-0201",
       "password": "pat123",
-      "role": "patient",
+      "role": "Role.patient",
       "address": "123 Main St, Cityville",
       "dob": "1985-03-15T00:00:00.000",
-      "sex": "male"
+      "sex": "Sex.male"
     },
     {
       "id": "PAT_000002",
       "name": "Maria Garcia",
       "phone": "555-0202",
       "password": "pat456",
-      "role": "patient",
+      "role": "Role.patient",
       "address": "456 Oak Ave, Townsville",
       "dob": "1990-07-22T00:00:00.000",
-      "sex": "female"
-    },
-    {
-      "id": "PAT_000003",
-      "name": "Robert Brown",
-      "phone": "555-0203",
-      "password": "pat789",
-      "role": "patient",
-      "address": "789 Pine Rd, Villagetown",
-      "dob": "1978-11-30T00:00:00.000",
-      "sex": "male"
+      "sex": "Sex.female"
     },
     {
       "id": "PHA_000001",
       "name": "Lisa Wilson",
       "phone": "555-0301",
       "password": "pha123",
-      "role": "pharmacist",
+      "role": "Role.pharmacist",
       "registrationId": "PHA123456",
       "pharmacyName": "City Pharmacy"
     },
@@ -62,7 +52,7 @@
       "name": "David Kim",
       "phone": "555-0302",
       "password": "pha456",
-      "role": "pharmacist",
+      "role": "Role.pharmacist",
       "registrationId": "PHA789012",
       "pharmacyName": "Health Plus Pharmacy"
     }

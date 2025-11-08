@@ -1,5 +1,6 @@
 import 'package:supporting_prescription/data/json_handler.dart';
 import 'package:supporting_prescription/domain/entities/dose_intake.dart';
+import 'package:supporting_prescription/domain/enums/prescription_status.dart';
 import 'package:supporting_prescription/domain/enums/renewal_status.dart';
 import 'package:supporting_prescription/presentation/services/medication_service.dart';
 import 'package:supporting_prescription/presentation/services/prescription_service.dart';
@@ -39,13 +40,19 @@ void main() {
       expect(renewalsBefore.length, 1);
       final renewalId = renewalsBefore[0].id;
 
+      // Verify initial state
+      expect(renewalsBefore[0].status, RenewalStatus.pending);
+      expect(renewalsBefore[0].doctorNote, isNull);
+
       // Approve renewal
       final approveSuccess = medicationService.processRenewal(renewalId, true, 'Approved for 30 more days');
       expect(approveSuccess, true);
 
-      // Verify renewal status by reloading from JSON
-      final renewalsAfter = JsonHandler.loadRenewals();
-      final updatedRenewal = renewalsAfter.firstWhere((r) => r.id == renewalId);
+      // ✅ USE SERVICE METHOD instead of JsonHandler.loadRenewals()
+      final renewalsAfter = medicationService.getRenewalRequests('PAT_000001');
+      expect(renewalsAfter.length, 1);
+      
+      final updatedRenewal = renewalsAfter[0];
       expect(updatedRenewal.status, RenewalStatus.approved);
       expect(updatedRenewal.doctorNote, 'Approved for 30 more days');
     });
@@ -69,17 +76,22 @@ void main() {
       expect(renewalsBefore.length, 1);
       final renewalId = renewalsBefore[0].id;
 
+      // Verify initial state
+      expect(renewalsBefore[0].status, RenewalStatus.pending);
+      expect(renewalsBefore[0].doctorNote, isNull);
+
       // Deny renewal
       final denySuccess = medicationService.processRenewal(renewalId, false, 'Patient needs follow-up');
       expect(denySuccess, true);
 
-      // Verify renewal status by reloading from JSON
-      final renewalsAfter = JsonHandler.loadRenewals();
-      final updatedRenewal = renewalsAfter.firstWhere((r) => r.id == renewalId);
+      // ✅ USE SERVICE METHOD instead of JsonHandler.loadRenewals()
+      final renewalsAfter = medicationService.getRenewalRequests('PAT_000001');
+      expect(renewalsAfter.length, 1);
+      
+      final updatedRenewal = renewalsAfter[0];
       expect(updatedRenewal.status, RenewalStatus.denied);
       expect(updatedRenewal.doctorNote, 'Patient needs follow-up');
     });
-
     test('Test Get Today\'s Doses - Current Implementation', () {
       final now = DateTime.now();
       

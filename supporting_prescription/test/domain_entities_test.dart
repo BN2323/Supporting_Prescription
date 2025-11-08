@@ -93,13 +93,14 @@ void main() {
     });
 
     test('Test Medication Schedule Generation', () {
+      final now = DateTime.now(); // Use current date
       final dose = Dose(
         doseId: 'DOSE_000001',
         amount: 500.0,
         frequencyPerDay: 2,
         durationInDays: 3,
-        startDate: DateTime(2024, 1, 1),
-        endDate: DateTime(2024, 1, 3),
+        startDate: now, // Use current date
+        endDate: now.add(Duration(days: 3)),
         instructions: 'Take with food',
       );
 
@@ -116,23 +117,25 @@ void main() {
       // Should generate 3 days * 2 times per day = 6 doses
       expect(schedule.length, 6);
       
-      // Check first dose - don't check exact ID format, just that it exists
+      // Check first dose
       expect(schedule[0].id, isNotEmpty);
       expect(schedule[0].patientId, 'PAT_000001');
       expect(schedule[0].medicationId, 'MED_000001');
-      expect(schedule[0].scheduledTime, DateTime(2024, 1, 1, 8, 0)); // 8 AM
+      expect(schedule[0].scheduledTime, DateTime(now.year, now.month, now.day, 8, 0)); // 8 AM today
       expect(schedule[0].isTaken, false);
       
       // Check second dose
       expect(schedule[1].id, isNotEmpty);
       expect(schedule[1].patientId, 'PAT_000001');
       expect(schedule[1].medicationId, 'MED_000001');
-      expect(schedule[1].scheduledTime, DateTime(2024, 1, 1, 20, 0)); // 8 PM
+      expect(schedule[1].scheduledTime, DateTime(now.year, now.month, now.day, 20, 0)); // 8 PM today
       expect(schedule[1].isTaken, false);
       
       // Verify the schedule covers 3 days
-      expect(schedule[2].scheduledTime, DateTime(2024, 1, 2, 8, 0)); // Day 2
-      expect(schedule[4].scheduledTime, DateTime(2024, 1, 3, 8, 0)); // Day 3
+      final tomorrow = now.add(Duration(days: 1));
+      final dayAfterTomorrow = now.add(Duration(days: 2));
+      expect(schedule[2].scheduledTime, DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 8, 0)); // Day 2
+      expect(schedule[4].scheduledTime, DateTime(dayAfterTomorrow.year, dayAfterTomorrow.month, dayAfterTomorrow.day, 8, 0)); // Day 3
       
       // Verify all doses have unique IDs
       final ids = schedule.map((dose) => dose.id).toSet();

@@ -1,0 +1,128 @@
+{
+  "prescriptions": [
+    {
+      "id": "RX_000001",
+      "doctorId": "DOC_000001",
+      "patientId": "PAT_000001",
+      "dateIssued": "2024-01-01T00:00:00.000",
+      "deaNumber": "AB1234567",
+      "status": "PrescriptionStatus.dispensed",
+      "medications": [
+        {
+          "id": "MED_000001",
+          "name": "Lisinopril",
+          "strength": 10.0,
+          "form": "MedForm.tablet",
+          "dose": {
+            "doseId": "DOSE_000001",
+            "amount": 10.0,
+            "frequencyPerDay": 2,
+            "durationInDays": 30,
+            "startDate": "2024-01-01T00:00:00.000",
+            "endDate": "2024-01-31T00:00:00.000",
+            "instructions": "Take once daily in the morning"
+          }
+        },
+        {
+          "id": "MED_000002",
+          "name": "Metformin",
+          "strength": 500.0,
+          "form": "MedForm.tablet",
+          "dose": {
+            "doseId": "DOSE_000002",
+            "amount": 500.0,
+            "frequencyPerDay": 2,
+            "durationInDays": 60,
+            "startDate": "2024-01-01T00:00:00.000",
+            "endDate": "2024-03-01T00:00:00.000",
+            "instructions": "Take with meals twice daily"
+          }
+        }
+      ]
+    },
+    {
+      "id": "RX_000002",
+      "doctorId": "DOC_000001",
+      "patientId": "PAT_000002",
+      "dateIssued": "2024-01-10T00:00:00.000",
+      "deaNumber": "AB1234567",
+      "status": "PrescriptionStatus.dispensed",
+      "medications": [
+        {
+          "id": "MED_000003",
+          "name": "Amoxicillin",
+          "strength": 250.0,
+          "form": "MedForm.capsule",
+          "dose": {
+            "doseId": "DOSE_000003",
+            "amount": 250.0,
+            "frequencyPerDay": 3,
+            "durationInDays": 10,
+            "startDate": "2024-01-10T00:00:00.000",
+            "endDate": "2024-01-20T00:00:00.000",
+            "instructions": "Take three times daily until finished"
+          }
+        }
+      ]
+    },
+    {
+      "id": "RX_000003",
+      "doctorId": "DOC_000002",
+      "patientId": "PAT_000001",
+      "dateIssued": "2024-01-05T00:00:00.000",
+      "deaNumber": "CD7890123",
+      "status": "PrescriptionStatus.dispensed",
+      "medications": [
+        {
+          "id": "MED_000004",
+          "name": "Atorvastatin",
+          "strength": 20.0,
+          "form": "MedForm.tablet",
+          "dose": {
+            "doseId": "DOSE_000004",
+            "amount": 20.0,
+            "frequencyPerDay": 1,
+            "durationInDays": 90,
+            "startDate": "2024-01-05T00:00:00.000",
+            "endDate": "2024-04-05T00:00:00.000",
+            "instructions": "Take at bedtime"
+          }
+        }
+      ]
+    },
+    {
+      "id": "RX_000004",
+      "doctorId": "DOC_000002",
+      "patientId": "PAT_000001",
+      "dateIssued": "2023-12-15T00:00:00.000",
+      "deaNumber": "CD7890123",
+      "status": "PrescriptionStatus.pending",
+      "medications": [
+        {
+          "id": "MED_000005",
+          "name": "Vitamin D",
+          "strength": 1000.0,
+          "form": "MedForm.capsule",
+          "dose": {
+            "doseId": "DOSE_000005",
+            "amount": 1000.0,
+            "frequencyPerDay": 1,
+            "durationInDays": 90,
+            "startDate": "2023-12-15T00:00:00.000",
+            "endDate": "2024-03-15T00:00:00.000",
+            "instructions": "Take once daily with food"
+          }
+        }
+      ]
+    },
+    {
+      "id": "RX_000005",
+      "doctorId": "DOC_000001",
+      "patientId": "PAT_000002",
+      "dateIssued": "2024-01-20T00:00:00.000",
+      "deaNumber": "AB1234567",
+      "status": "PrescriptionStatus.cancelled",
+      "medications": []
+    }
+  ]
+}

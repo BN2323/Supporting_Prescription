@@ -1,0 +1,27 @@
+{
+  "renewals": [
+    {
+      "id": "REN_000001",
+      "patientId": "PAT_000001",
+      "prescriptionId": "RX_000001",
+      "requestedDate": "2024-01-10T00:00:00.000",
+      "status": "RenewalStatus.approved",
+      "doctorNote": "Approved for 30 more days"
+    },
+    {
+      "id": "REN_000002",
+      "patientId": "PAT_000002",
+      "prescriptionId": "RX_000002",
+      "requestedDate": "2024-01-12T00:00:00.000",
+      "status": "RenewalStatus.pending"
+    },
+    {
+      "id": "REN_000003",
+      "patientId": "PAT_000001",
+      "prescriptionId": "RX_000003",
+      "requestedDate": "2024-01-14T00:00:00.000",
+      "status": "RenewalStatus.denied",
+      "doctorNote": "Patient needs follow-up appointment first"
+    }
+  ]
+}
