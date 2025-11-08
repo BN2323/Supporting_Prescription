@@ -48,7 +48,7 @@ class PrescriptionService {
       
       final prescription = prescriptions[prescriptionIndex];
       
-      // Create dose with proper schedule
+
       final dose = Dose(
         doseId: JsonHandler.getNextId('dose'),
         amount: amount,
@@ -59,7 +59,7 @@ class PrescriptionService {
         instructions: instructions,
       );
       
-      // Create medication
+
       final medication = Medication(
         id: JsonHandler.getNextId('medication'),
         name: name,
@@ -68,11 +68,11 @@ class PrescriptionService {
         dose: dose,
       );
       
-      // Add medication to prescription
+
       prescription.addMedication(medication);
       JsonHandler.savePrescriptions(prescriptions);
       
-      // Generate and save dose intake schedule
+
       _generateDoseSchedule(medication, prescription.patientId);
       return true;
     } catch (e) {
@@ -186,7 +186,7 @@ class PrescriptionService {
     }
   }
   
-  // New method to get patient prescription history
+
   List<Prescription> getPatientPrescriptionHistory(String patientId) {
     final prescriptions = getPrescriptionsByPatient(patientId);
     return prescriptions..sort((a, b) => b.dateIssued.compareTo(a.dateIssued));

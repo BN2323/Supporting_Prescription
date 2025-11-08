@@ -56,7 +56,7 @@ class PharmacistMenu {
       } else if (choice > 0 && choice <= pending.length) {
         _prescriptionService.dispensePrescription(pending[choice - 1].id);
         print('Prescription dispensed!');
-        return; // Go back after dispensing
+        return;
       } else {
         print('Invalid selection!');
       }

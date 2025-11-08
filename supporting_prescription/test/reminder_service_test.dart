@@ -16,10 +16,10 @@ void main() {
     });
 
     test('Test CheckReminders - No Upcoming Doses', () {
-      // No doses in the system
+      
       JsonHandler.saveDoses([]);
       
-      // Capture print output
+      
       final output = capturePrint(() {
         ReminderService.checkReminders('PAT_000001');
       });
@@ -31,7 +31,7 @@ void main() {
       final now = DateTime.now();
       final in30Minutes = now.add(Duration(minutes: 30));
       
-      // Create a prescription first
+      
       final prescription = Prescription(
         id: 'RX_000001',
         doctorId: 'DOC_000001',
@@ -59,7 +59,7 @@ void main() {
       prescription.addMedication(medication);
       JsonHandler.savePrescriptions([prescription]);
       
-      // Create upcoming dose
+      
       final upcomingDose = DoseIntake(
         id: 'DOSE_UPCOMING',
         patientId: 'PAT_000001',
@@ -70,7 +70,7 @@ void main() {
       
       JsonHandler.saveDoses([upcomingDose]);
       
-      // Capture print output
+      
       final output = capturePrint(() {
         ReminderService.checkReminders('PAT_000001');
       });
@@ -84,7 +84,7 @@ void main() {
       final now = DateTime.now();
       final in2Hours = now.add(Duration(hours: 2));
       
-      // Create dose outside the 1-hour window
+      
       final futureDose = DoseIntake(
         id: 'DOSE_FUTURE',
         patientId: 'PAT_000001',
@@ -95,7 +95,7 @@ void main() {
       
       JsonHandler.saveDoses([futureDose]);
       
-      // Capture print output
+      
       final output = capturePrint(() {
         ReminderService.checkReminders('PAT_000001');
       });
@@ -107,18 +107,18 @@ void main() {
       final now = DateTime.now();
       final in30Minutes = now.add(Duration(minutes: 30));
       
-      // Create already taken dose
+      
       final takenDose = DoseIntake(
         id: 'DOSE_TAKEN',
         patientId: 'PAT_000001',
         medicationId: 'MED_000001',
         scheduledTime: in30Minutes,
-        isTaken: true, // Already taken
+        isTaken: true, 
       );
       
       JsonHandler.saveDoses([takenDose]);
       
-      // Capture print output
+      
       final output = capturePrint(() {
         ReminderService.checkReminders('PAT_000001');
       });
@@ -130,10 +130,10 @@ void main() {
       final now = DateTime.now();
       final in30Minutes = now.add(Duration(minutes: 30));
       
-      // Create dose for different patient
+      
       final otherPatientDose = DoseIntake(
         id: 'DOSE_OTHER',
-        patientId: 'PAT_000002', // Different patient
+        patientId: 'PAT_000002', 
         medicationId: 'MED_000001',
         scheduledTime: in30Minutes,
         isTaken: false,
@@ -141,7 +141,7 @@ void main() {
       
       JsonHandler.saveDoses([otherPatientDose]);
       
-      // Capture print output
+    
       final output = capturePrint(() {
         ReminderService.checkReminders('PAT_000001');
       });
@@ -150,10 +150,10 @@ void main() {
     });
 
     test('Test ShowMissedDoses - No Missed Doses', () {
-      // No doses in the system
+     
       JsonHandler.saveDoses([]);
       
-      // Capture print output
+      
       final output = capturePrint(() {
         ReminderService.showMissedDoses('PAT_000001');
       });
@@ -166,7 +166,7 @@ void main() {
       final oneHourAgo = now.subtract(Duration(hours: 1));
       final yesterday = now.subtract(Duration(days: 1));
       
-      // Create prescriptions first
+      
       final prescription = Prescription(
         id: 'RX_000001',
         doctorId: 'DOC_000001',
@@ -211,7 +211,7 @@ void main() {
       prescription.addMedication(med2);
       JsonHandler.savePrescriptions([prescription]);
       
-      // Create missed doses (within last 24 hours, not taken)
+      
       final missedDose1 = DoseIntake(
         id: 'DOSE_MISSED_1',
         patientId: 'PAT_000001',
@@ -228,7 +228,7 @@ void main() {
         isTaken: false,
       );
       
-      // Create taken dose (should not appear)
+      
       final takenDose = DoseIntake(
         id: 'DOSE_TAKEN',
         patientId: 'PAT_000001',
@@ -237,7 +237,7 @@ void main() {
         isTaken: true,
       );
       
-      // Create future dose (should not appear)
+    
       final futureDose = DoseIntake(
         id: 'DOSE_FUTURE',
         patientId: 'PAT_000001',
@@ -246,7 +246,7 @@ void main() {
         isTaken: false,
       );
       
-      // Create dose for different patient (should not appear)
+      
       final otherPatientDose = DoseIntake(
         id: 'DOSE_OTHER',
         patientId: 'PAT_000002',
@@ -257,7 +257,7 @@ void main() {
       
       JsonHandler.saveDoses([missedDose1, missedDose2, takenDose, futureDose, otherPatientDose]);
       
-      // Capture print output
+      
       final output = capturePrint(() {
         ReminderService.showMissedDoses('PAT_000001');
       });
@@ -272,7 +272,7 @@ void main() {
     test('Test ShowMissedDoses - More Than 5 Missed Doses', () {
       final now = DateTime.now();
       
-      // Create prescription
+      
       final prescription = Prescription(
         id: 'RX_000001',
         doctorId: 'DOC_000001',
@@ -281,7 +281,7 @@ void main() {
         status: PrescriptionStatus.dispensed,
       );
       
-      // Create more than 5 missed doses
+      
       final missedDoses = List.generate(7, (index) {
         final med = Medication(
           id: 'MED_00000$index',
@@ -312,21 +312,21 @@ void main() {
       JsonHandler.savePrescriptions([prescription]);
       JsonHandler.saveDoses(missedDoses);
       
-      // Capture print output
+      
       final output = capturePrint(() {
         ReminderService.showMissedDoses('PAT_000001');
       });
       
       expect(output, contains('❌ MISSED MEDICATIONS'));
-      expect(output, contains('... and 2 more missed doses')); // 7 total - 5 shown = 2 more
+      expect(output, contains('... and 2 more missed doses')); 
     });
 
-    // Test private methods using reflection or by testing their effects through public methods
+    
     test('Test Medication Name Lookup Through Reminders', () {
       final now = DateTime.now();
       final in30Minutes = now.add(Duration(minutes: 30));
       
-      // Create prescription with medication
+     
       final prescription = Prescription(
         id: 'RX_000001',
         doctorId: 'DOC_000001',
@@ -354,7 +354,7 @@ void main() {
       prescription.addMedication(medication);
       JsonHandler.savePrescriptions([prescription]);
       
-      // Create dose
+      
       final dose = DoseIntake(
         id: 'DOSE_TEST',
         patientId: 'PAT_000001',
@@ -365,7 +365,7 @@ void main() {
       
       JsonHandler.saveDoses([dose]);
       
-      // Test that the medication name appears correctly in reminders
+      
       final output = capturePrint(() {
         ReminderService.checkReminders('PAT_000001');
       });
@@ -377,7 +377,7 @@ void main() {
       final now = DateTime.now();
       final in30Minutes = now.add(Duration(minutes: 30));
       
-      // Create dose without corresponding prescription
+      
       final dose = DoseIntake(
         id: 'DOSE_TEST',
         patientId: 'PAT_000001',
@@ -388,7 +388,7 @@ void main() {
       
       JsonHandler.saveDoses([dose]);
       
-      // Test that the fallback name appears
+      
       final output = capturePrint(() {
         ReminderService.checkReminders('PAT_000001');
       });
@@ -398,9 +398,9 @@ void main() {
 
     test('Test Time Formatting in Output', () {
       final now = DateTime.now();
-      final testTime = DateTime(now.year, now.month, now.day, 14, 30); // 2:30 PM
+      final testTime = DateTime(now.year, now.month, now.day, 14, 30);
       
-      // Create dose with specific time
+
       final dose = DoseIntake(
         id: 'DOSE_TEST',
         patientId: 'PAT_000001',
@@ -415,7 +415,7 @@ void main() {
         ReminderService.checkReminders('PAT_000001');
       });
       
-      // Should show time in 12-hour format
+
       expect(output, contains('02:30 PM') || output.contains('02:30'));
     });
   });

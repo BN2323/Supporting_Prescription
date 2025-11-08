@@ -32,7 +32,7 @@ class JsonHandler {
       print('Warning: Error loading sequences: $e');
     }
     
-    // Initialize default sequences
+
     _sequences.putIfAbsent('doctor', () => 1);
     _sequences.putIfAbsent('patient', () => 1);
     _sequences.putIfAbsent('pharmacist', () => 1);
@@ -129,10 +129,10 @@ class JsonHandler {
     final prefix = _getPrefix(entityType);
     final sequence = _sequences[entityType] ?? 1;
     
-    // Clean sequential ID: PREFIX_SEQUENCE
+
     final id = '${prefix}_${sequence.toString().padLeft(6, '0')}';
     
-    // Increment sequence for next call
+
     _sequences[entityType] = sequence + 1;
     _saveSequences();
     
@@ -152,7 +152,7 @@ class JsonHandler {
     }
   }
   
-  // Method to check current sequences (useful for debugging)
+
   static Map<String, int> getCurrentSequences() {
     _initializeSequences();
     return Map.from(_sequences);

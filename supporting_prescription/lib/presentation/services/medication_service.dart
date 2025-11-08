@@ -19,7 +19,7 @@ class MedicationService {
       
       final dose = doses[doseIndex];
 
-      // Check if the medication's prescription is dispensed
+
       final prescriptions = JsonHandler.loadPrescriptions();
       final prescription = _findPrescriptionForMedication(dose.medicationId, prescriptions);
       
@@ -43,7 +43,7 @@ class MedicationService {
     }
   }
   
-  // Helper method to find which prescription contains a medication
+
   Prescription? _findPrescriptionForMedication(String medicationId, List<Prescription> prescriptions) {
     for (final prescription in prescriptions) {
       final hasMedication = prescription.medications.any((med) => med.id == medicationId);
@@ -58,7 +58,7 @@ class MedicationService {
     try {
       final renewals = JsonHandler.loadRenewals();
       
-      // Check if renewal already exists
+
       if (renewals.any((r) => r.patientId == patientId && r.prescriptionId == prescriptionId && r.status == RenewalStatus.pending)) {
         print('⚠️ Renewal request already pending');
         return false;
@@ -114,9 +114,9 @@ class MedicationService {
       final doses = JsonHandler.loadDoses();
       final today = DateTime.now();
       print('it works');
-      // FIXED: Filter by patientId AND today's date
+
       return doses.where((dose) =>
-        dose.patientId == patientId && // Use the patientId field
+        dose.patientId == patientId &&
         dose.scheduledTime.year == today.year &&
         dose.scheduledTime.month == today.month &&
         dose.scheduledTime.day == today.day
@@ -156,7 +156,7 @@ class MedicationService {
     try {
       final doses = JsonHandler.loadDoses();
       
-      // TEMPORARY FIX: Return all doses sorted by time
+
       return doses.toList()..sort((a, b) => b.scheduledTime.compareTo(a.scheduledTime));
     } catch (e) {
       print('Error loading dose history: $e');
@@ -170,7 +170,7 @@ class MedicationService {
       final now = DateTime.now();
       final endDate = now.add(Duration(days: daysAhead));
       
-      // TEMPORARY FIX: Return all upcoming doses
+
       return doses.where((dose) =>
         dose.scheduledTime.isAfter(now) &&
         dose.scheduledTime.isBefore(endDate) &&
@@ -182,11 +182,11 @@ class MedicationService {
     }
   }
   
-  // New method to get medication adherence rate
+
   double getAdherenceRate(String patientId) {
     final doses = JsonHandler.loadDoses();
     
-    // TEMPORARY FIX: Calculate adherence for all doses
+
     if (doses.isEmpty) return 0.0;
     
     final takenDoses = doses.where((d) => d.isTaken).length;
