@@ -26,10 +26,10 @@ void main() {
         sex: Sex.male,
       );
 
-      // Register user
+
       authService.registerUser(patient);
 
-      // Test successful login
+
       expect(authService.login('555-1234', 'password123'), true);
       expect(authService.currentUser?.name, 'Test User');
       expect(authService.currentUser?.phone, '555-1234');
@@ -48,10 +48,10 @@ void main() {
 
       authService.registerUser(patient);
 
-      // Test wrong password
+
       expect(authService.login('555-1234', 'wrongpassword'), false);
       
-      // Test wrong phone
+
       expect(authService.login('555-9999', 'password123'), false);
     });
 
@@ -69,7 +69,7 @@ void main() {
       final patient2 = Patient(
         id: 'PAT_000002',
         name: 'User Two',
-        phone: '555-1234', // Same phone
+        phone: '555-1234', 
         password: 'pass2',
         address: 'Address 2',
         dob: DateTime(1990, 1, 1),
@@ -78,7 +78,7 @@ void main() {
 
       authService.registerUser(patient1);
       
-      // Should throw exception for duplicate phone
+
       expect(() => authService.registerUser(patient2), throwsException);
     });
 
@@ -118,7 +118,7 @@ void main() {
 
       final patients = authService.getPatients();
       
-      // Should only return patients, not doctors
+
       expect(patients.length, 2);
       expect(patients.any((p) => p.name == 'Patient One'), true);
       expect(patients.any((p) => p.name == 'Patient Two'), true);

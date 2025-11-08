@@ -54,7 +54,7 @@ class ReminderService {
       final timeLeft = dose.scheduledTime.difference(DateTime.now());
       final minutesLeft = timeLeft.inMinutes;
       
-      // Check if prescription is dispensed
+
       final prescription = _getPrescriptionForDose(dose);
       final isAvailable = prescription?.status == PrescriptionStatus.dispensed;
       
@@ -97,7 +97,7 @@ class ReminderService {
     print('=' * 50);
   }
 
-  // Add this helper method to ReminderService
+
   static Prescription? _getPrescriptionForDose(DoseIntake dose) {
     try {
       final prescriptions = JsonHandler.loadPrescriptions();
@@ -114,8 +114,7 @@ class ReminderService {
     return null;
   }
   static String _getMedicationNameFromDose(DoseIntake dose) {
-    // This would need access to prescription data to get medication names
-    // For now, we'll extract from the dose ID
+
     try {
       final prescriptions = JsonHandler.loadPrescriptions();
       for (final prescription in prescriptions) {
@@ -129,7 +128,7 @@ class ReminderService {
       print('Error getting medication name: $e');
     }
     
-    // Fallback: parse from dose ID
+
     return 'Medication ${dose.medicationId}';
   }
   
@@ -172,7 +171,7 @@ class ReminderService {
     print('\n❌ MISSED MEDICATIONS');
     print('=' * 50);
     
-    for (final dose in missedDoses.take(5)) { // Show last 5 missed doses
+    for (final dose in missedDoses.take(5)) { 
       print('⏰ ${_formatTime(dose.scheduledTime)} - ${_getMedicationNameFromDose(dose)}');
       print('   Missed: ${_formatDate(dose.scheduledTime)}');
     }

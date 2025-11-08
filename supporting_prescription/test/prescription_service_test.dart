@@ -56,7 +56,7 @@ void main() {
     });
 
     test('Test Add Medication to Prescription', () {
-      // Create prescription first
+
       final prescription = prescriptionService.createPrescription(
         'DOC_000001',
         'PAT_000001',
@@ -65,7 +65,7 @@ void main() {
 
       expect(prescription, isNotNull);
 
-      // Add medication
+
       final success = prescriptionService.addMedicationToPrescription(
         prescription!.id,
         'Test Medication',
@@ -79,7 +79,7 @@ void main() {
 
       expect(success, true);
 
-      // Verify medication was added
+ 
       final loadedPrescription = prescriptionService.getPrescription(prescription.id);
       expect(loadedPrescription, isNotNull);
       expect(loadedPrescription!.medications.length, 1);
@@ -122,10 +122,10 @@ void main() {
     });
 
     test('Test Get Prescriptions by Patient', () {
-      // Create multiple prescriptions for same patient
+
       prescriptionService.createPrescription('DOC_000001', 'PAT_000001', 'DEA1111111');
       prescriptionService.createPrescription('DOC_000002', 'PAT_000001', 'DEA2222222');
-      prescriptionService.createPrescription('DOC_000001', 'PAT_000002', 'DEA3333333'); // Different patient
+      prescriptionService.createPrescription('DOC_000001', 'PAT_000002', 'DEA3333333'); 
 
       final patientPrescriptions = prescriptionService.getPrescriptionsByPatient('PAT_000001');
       expect(patientPrescriptions.length, 2);
@@ -134,7 +134,7 @@ void main() {
     test('Test Get Prescriptions by Doctor', () {
       prescriptionService.createPrescription('DOC_000001', 'PAT_000001', 'DEA1111111');
       prescriptionService.createPrescription('DOC_000001', 'PAT_000002', 'DEA2222222');
-      prescriptionService.createPrescription('DOC_000002', 'PAT_000001', 'DEA3333333'); // Different doctor
+      prescriptionService.createPrescription('DOC_000002', 'PAT_000001', 'DEA3333333');
 
       final doctorPrescriptions = prescriptionService.getPrescriptionsByDoctor('DOC_000001');
       expect(doctorPrescriptions.length, 2);

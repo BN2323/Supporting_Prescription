@@ -90,7 +90,7 @@ class DoctorMenu {
     }
   }
 void _viewAndManagePrescriptions() {
-    // Helper to get fresh data
+
     List<Prescription> getCurrentPrescriptions() {
       return _prescriptionService.getPrescriptionsByDoctor(_currentUser.id);
     }
@@ -105,7 +105,7 @@ void _viewAndManagePrescriptions() {
     while (true) {
       print('\n--- My Prescriptions ---');
       
-      // Refresh the list to get any updates
+
       prescriptions = getCurrentPrescriptions();
       
       for (int i = 0; i < prescriptions.length; i++) {
@@ -115,10 +115,10 @@ void _viewAndManagePrescriptions() {
                           p.status == PrescriptionStatus.dispensed ? '✅' : '❌';
         print('${i + 1}. $statusIcon ${p.id} - ${patient?.name} - ${p.status}');
         
-        // Show medications count for quick overview
+
         if (p.medications.isNotEmpty) {
           print('   Medications: ${p.medications.length}');
-          for (final med in p.medications.take(2)) { // Show first 2 medications
+          for (final med in p.medications.take(2)) {
             print('     💊 ${med.name}');
           }
           if (p.medications.length > 2) {
@@ -134,7 +134,7 @@ void _viewAndManagePrescriptions() {
         return;
       } else if (choice > 0 && choice <= prescriptions.length) {
         _viewPrescriptionDetails(prescriptions[choice - 1]);
-        // Refresh list after returning from details view
+
         prescriptions = getCurrentPrescriptions();
       } else {
         print('Invalid selection!');
@@ -142,7 +142,7 @@ void _viewAndManagePrescriptions() {
     }
   }
   void _viewPrescriptionDetails(Prescription prescription) {
-    // Helper to get fresh prescription data
+
     Prescription? getCurrentPrescription() {
       return _prescriptionService.getPrescription(prescription.id);
     }
@@ -154,7 +154,7 @@ void _viewAndManagePrescriptions() {
     }
     
     while (true) {
-      // Use currentPrescription instead of the original prescription parameter
+
       final patient = _authService.getPatient(currentPrescription!.id);
       
       print('\n--- Prescription Details ---');
@@ -185,7 +185,7 @@ void _viewAndManagePrescriptions() {
       switch (choice) {
         case '1': 
           _addMedicationToPrescription(currentPrescription.id);
-          // Reload the prescription after adding medication
+
           currentPrescription = getCurrentPrescription();
           if (currentPrescription == null) {
             print('Error: Prescription not found after update!');
@@ -194,7 +194,7 @@ void _viewAndManagePrescriptions() {
           break;
         case '2': 
           _cancelPrescription(currentPrescription.id);
-          return; // Go back to list after cancellation
+          return;
         case '3': 
           return;
         default: 
@@ -207,7 +207,7 @@ void _addMedicationToPrescription(String prescriptionId) {
     
     final name = _getInput('Medication Name: ');
     
-    // Better input handling for numbers
+
     final strengthInput = _getInput('Strength (mg): ');
     final strength = double.tryParse(strengthInput) ?? 0.0;
     if (strength <= 0) {
@@ -267,7 +267,7 @@ void _addMedicationToPrescription(String prescriptionId) {
     if (success) {
       print('✅ Medication added successfully!');
       
-      // Verify the medication was actually added
+
       final updatedPrescription = _prescriptionService.getPrescription(prescriptionId);
       if (updatedPrescription != null && updatedPrescription.medications.isNotEmpty) {
         final lastMed = updatedPrescription.medications.last;

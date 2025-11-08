@@ -20,7 +20,7 @@ class PatientMenu {
   
   void showMenu() {
     while (true) {
-      // Show reminders every time the menu is displayed
+
       _showReminders();
       
       print('\n--- PATIENT DASHBOARD ---');
@@ -53,7 +53,7 @@ class PatientMenu {
   }
   
   void _showReminders() {
-    // Check for upcoming doses in the next hour
+
     ReminderService.checkReminders(_currentUser.id);
   }
   
@@ -77,7 +77,7 @@ class PatientMenu {
       } else {
         print('  No medications');
       }
-      print(''); // Empty line for separation
+      print('');
     }
   }
   
@@ -97,7 +97,7 @@ class PatientMenu {
         return;
       }
       
-      // Separate doses by prescription status
+
       final availableDoses = <DoseIntake>[];
       final pendingPrescriptionDoses = <DoseIntake>[];
       
@@ -118,7 +118,7 @@ class PatientMenu {
       final pending = availableDoses.where((d) => !d.isTaken).toList();
       final taken = availableDoses.where((d) => d.isTaken).toList();
       
-      // Show available medications (from dispensed prescriptions)
+
       if (pending.isNotEmpty) {
         print('\n🟡 AVAILABLE - READY TO TAKE:');
         for (final dose in pending) {
@@ -147,7 +147,7 @@ class PatientMenu {
         }
       }
       
-      // Show pending prescription medications (not yet dispensed)
+
       if (pendingPrescriptionDoses.isNotEmpty) {
         print('\n⏳ PENDING PRESCRIPTION - NOT YET AVAILABLE:');
         for (final dose in pendingPrescriptionDoses) {
@@ -160,19 +160,19 @@ class PatientMenu {
         print('   💡 These medications will be available after pharmacist dispenses your prescription');
       }
       
-      // Show summary
+
       print('\n📊 Today\'s Summary:');
       print('   • ${taken.length} taken');
       print('   • ${pending.length} available to take');
       print('   • ${pendingPrescriptionDoses.length} waiting for prescription approval');
       
-      // Calculate and show today's adherence
+
       if (availableDoses.isNotEmpty) {
         final todayAdherence = _calculateTodayAdherence(availableDoses);
         print('📈 Today\'s adherence: ${todayAdherence.toStringAsFixed(1)}%');
       }
       
-      // Show overall adherence rate
+
       final overallAdherence = _medicationService.getAdherenceRate(_currentUser.id);
       print('📊 Your overall adherence rate: ${overallAdherence.toStringAsFixed(1)}%');
       
@@ -181,7 +181,7 @@ class PatientMenu {
     }
   }
 
-  // Helper method to calculate today's adherence
+
   double _calculateTodayAdherence(List<DoseIntake> availableDoses) {
     if (availableDoses.isEmpty) return 0.0;
     
@@ -189,7 +189,7 @@ class PatientMenu {
     return (takenCount / availableDoses.length) * 100;
   }
 
-  // Helper method to get readable prescription status
+
   String _getPrescriptionStatusText(PrescriptionStatus? status) {
     if (status == null) return 'Unknown';
     
@@ -205,7 +205,7 @@ class PatientMenu {
     }
   }
 
-  // Make sure _getPrescriptionForDose is implemented correctly
+
   Prescription? _getPrescriptionForDose(DoseIntake dose) {
     try {
       final prescriptions = _prescriptionService.getAllPrescriptions();
@@ -256,13 +256,13 @@ void _recordMedication() {
         return;
       }
       
-      // Filter only doses from dispensed prescriptions that aren't taken yet
+
       final availableDoses = allDoses.where((dose) {
         final prescription = _getPrescriptionForDose(dose);
         return prescription?.status == PrescriptionStatus.dispensed && !dose.isTaken;
       }).toList();
       
-      // Filter pending prescription doses
+
       final pendingDoses = allDoses.where((dose) {
         final prescription = _getPrescriptionForDose(dose);
         return prescription?.status != PrescriptionStatus.dispensed && !dose.isTaken;
@@ -286,7 +286,7 @@ void _recordMedication() {
         } else {
           print('🎉 All medications for today have been taken!');
           
-          // Show taken medications for reference
+
           final takenDoses = allDoses.where((dose) => dose.isTaken).toList();
           if (takenDoses.isNotEmpty) {
             print('\n📋 Medications already taken today:');
@@ -300,7 +300,7 @@ void _recordMedication() {
         return;
       }
       
-      // Show medication recording interface
+
       _showMedicationRecordingInterface(availableDoses);
       
     } catch (e) {
@@ -311,7 +311,7 @@ void _recordMedication() {
   void _showMedicationRecordingInterface(List<DoseIntake> availableDoses) {
     print('\n--- Record Medication Taken ---');
     
-    // Check for overdue medications
+
     final now = DateTime.now();
     final overdueDoses = availableDoses.where((dose) => 
       dose.scheduledTime.isBefore(now)
@@ -339,7 +339,7 @@ void _recordMedication() {
       final time = _formatTime(dose.scheduledTime);
       final medName = _getMedicationName(dose.medicationId);
       
-      // Add status indicators
+
       String status = '';
       final timeUntil = dose.scheduledTime.difference(now);
       
@@ -349,7 +349,7 @@ void _recordMedication() {
         status = ' ⚠️  DUE SOON';
       }
       
-      // Get prescription instructions if available
+
       final prescription = _getPrescriptionForDose(dose);
       String instructions = '';
       if (prescription != null) {
@@ -408,7 +408,7 @@ void _recordMedication() {
     print('Medication: $medName');
     print('Scheduled Time: $time');
     
-    // Show if overdue
+    
     final now = DateTime.now();
     if (dose.scheduledTime.isBefore(now)) {
       final overdueBy = now.difference(dose.scheduledTime);
@@ -421,7 +421,7 @@ void _recordMedication() {
       print('Status: Due in $minutes minutes');
     }
     
-    // Show instructions
+
     final prescription = _getPrescriptionForDose(dose);
     if (prescription != null) {
       final medication = prescription.medications.firstWhere(
@@ -458,11 +458,11 @@ void _recordMedication() {
       if (success) {
         print('\n✅ Medication recorded as taken!');
         
-        // Show updated adherence
+
         final adherence = _medicationService.getAdherenceRate(_currentUser.id);
         print('📈 Your adherence rate: ${adherence.toStringAsFixed(1)}%');
         
-        // Check if all medications are now taken
+
         final remainingDoses = _medicationService.getTodayDoses(_currentUser.id)
             .where((d) => !d.isTaken && _getPrescriptionForDose(d)?.status == PrescriptionStatus.dispensed)
             .length;
@@ -478,7 +478,7 @@ void _recordMedication() {
     }
   }
 
-  // Helper method (add this if not already present)
+
   void _requestRenewal() {
     final prescriptions = _prescriptionService.getPrescriptionsByPatient(_currentUser.id);
     
@@ -487,7 +487,7 @@ void _recordMedication() {
       return;
     }
     
-    // Show only active prescriptions that can be renewed
+
     final activePrescriptions = prescriptions.where((p) => 
       p.status.toString().contains('dispensed') && 
       !p.isExpired
@@ -508,7 +508,7 @@ void _recordMedication() {
     
     final id = _getInput('\nEnter Prescription ID to renew: ');
     
-    // Check if prescription exists and belongs to patient
+
     Prescription? prescription;
     for (final p in prescriptions) {
       if (p.id == id) {

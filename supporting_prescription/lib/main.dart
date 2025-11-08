@@ -121,11 +121,11 @@ class MainMenu {
           user as Patient,
         );
         
-        // Show welcome message with reminders for patients
+
         print('\n👋 Welcome back, ${user.name}!');
         print('Checking your medication reminders...\n');
         
-        // Show upcoming and missed dose reminders
+
         ReminderService.checkReminders(user.id);
         ReminderService.showMissedDoses(user.id);
         
@@ -152,12 +152,12 @@ class MainMenu {
 }
 
 void main() {
-  // Initialize services
+
   final authService = AuthService();
   final prescriptionService = PrescriptionService();
   final medicationService = MedicationService();
 
-  // Create and run main menu
+
   final mainMenu = MainMenu(
     authService,
     prescriptionService,

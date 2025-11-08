@@ -37,7 +37,7 @@ class UserMapper {
   }
   
   static User fromJson(Map<String, dynamic> json) {
-    // Add null safety
+
     final roleString = json['role'] as String? ?? 'patient';
     final role = Role.values.firstWhere(
       (e) => e.name == roleString,

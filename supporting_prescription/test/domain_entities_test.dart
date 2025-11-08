@@ -35,7 +35,7 @@ void main() {
         patientId: 'PAT_000001',
         deaNumber: 'DEA1234567',
         status: PrescriptionStatus.dispensed,
-        // Set date issued to more than 30 days ago
+
         dateIssued: DateTime.now().subtract(Duration(days: 31))
       );
 
@@ -55,8 +55,8 @@ void main() {
     test('Test DoseIntake Mark as Taken', () {
       final dose = DoseIntake(
         id: 'DOSE_000001',
-        patientId: 'PAT_000001', // Added missing parameter
-        medicationId: 'MED_000001', // Added missing parameter
+        patientId: 'PAT_000001', 
+        medicationId: 'MED_000001',
         scheduledTime: DateTime.now(),
         isTaken: false,
       );
@@ -67,7 +67,7 @@ void main() {
       expect(result, true);
       expect(dose.isTaken, true);
 
-      // Marking again should return false (already taken)
+
       final secondResult = dose.markTaken();
       expect(secondResult, false);
     });
@@ -114,20 +114,29 @@ void main() {
 
       final schedule = medication.generateSchedule('PAT_000001');
       
-      // Should generate 3 days * 2 times per day = 6 doses
+
       expect(schedule.length, 6);
       
+<<<<<<< HEAD
       // Check first dose
       expect(schedule[0].id, isNotEmpty);
       expect(schedule[0].patientId, 'PAT_000001');
       expect(schedule[0].medicationId, 'MED_000001');
       expect(schedule[0].scheduledTime, DateTime(now.year, now.month, now.day, 8, 0)); // 8 AM today
+=======
+
+      expect(schedule[0].id, isNotEmpty);
+      expect(schedule[0].patientId, 'PAT_000001');
+      expect(schedule[0].medicationId, 'MED_000001');
+      expect(schedule[0].scheduledTime, DateTime(2024, 1, 1, 8, 0)); 
+>>>>>>> f71cdaa1f7eade5e427fb8a8f22ae972f866c894
       expect(schedule[0].isTaken, false);
       
-      // Check second dose
+
       expect(schedule[1].id, isNotEmpty);
       expect(schedule[1].patientId, 'PAT_000001');
       expect(schedule[1].medicationId, 'MED_000001');
+<<<<<<< HEAD
       expect(schedule[1].scheduledTime, DateTime(now.year, now.month, now.day, 20, 0)); // 8 PM today
       expect(schedule[1].isTaken, false);
       
@@ -136,10 +145,18 @@ void main() {
       final dayAfterTomorrow = now.add(Duration(days: 2));
       expect(schedule[2].scheduledTime, DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 8, 0)); // Day 2
       expect(schedule[4].scheduledTime, DateTime(dayAfterTomorrow.year, dayAfterTomorrow.month, dayAfterTomorrow.day, 8, 0)); // Day 3
+=======
+      expect(schedule[1].scheduledTime, DateTime(2024, 1, 1, 20, 0));
+      expect(schedule[1].isTaken, false);
       
-      // Verify all doses have unique IDs
+
+      expect(schedule[2].scheduledTime, DateTime(2024, 1, 2, 8, 0)); 
+      expect(schedule[4].scheduledTime, DateTime(2024, 1, 3, 8, 0)); 
+>>>>>>> f71cdaa1f7eade5e427fb8a8f22ae972f866c894
+      
+ 
       final ids = schedule.map((dose) => dose.id).toSet();
-      expect(ids.length, 6); // All IDs should be unique
+      expect(ids.length, 6);
     });
 
     test('Test Add Medication to Prescription', () {
