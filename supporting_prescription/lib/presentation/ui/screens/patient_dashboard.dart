@@ -84,6 +84,7 @@ class PatientMenu {
   void _viewTodaysMeds() {
     try {
       final allDoses = _medicationService.getTodayDoses(_currentUser.id);
+      print('all:  $allDoses');
       
       print('\n--- Today\'s Medications ---');
       
