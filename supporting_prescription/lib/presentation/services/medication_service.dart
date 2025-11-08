@@ -113,7 +113,7 @@ class MedicationService {
     try {
       final doses = JsonHandler.loadDoses();
       final today = DateTime.now();
-      
+      print('it works');
       // FIXED: Filter by patientId AND today's date
       return doses.where((dose) =>
         dose.patientId == patientId && // Use the patientId field
