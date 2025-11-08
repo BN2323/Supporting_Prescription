@@ -1,0 +1,9 @@
+{
+  "doctor": 1,
+  "patient": 1,
+  "pharmacist": 1,
+  "prescription": 1,
+  "medication": 1,
+  "renewal": 1,
+  "dose": 1
+}
