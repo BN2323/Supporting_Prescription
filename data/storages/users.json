@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "id": "DOC_000001",
+      "id": "USER_000001",
       "name": "Dr. Sarah Johnson",
       "phone": "555-0101",
       "password": "doc123",
@@ -10,7 +10,7 @@
       "specialization": "Cardiology"
     },
     {
-      "id": "DOC_000002",
+      "id": "USER_000002",
       "name": "Dr. Michael Chen",
       "phone": "555-0102",
       "password": "doc456",
@@ -19,7 +19,7 @@
       "specialization": "Pediatrics"
     },
     {
-      "id": "PAT_000001",
+      "id": "USER_000003",
       "name": "John Smith",
       "phone": "555-0201",
       "password": "pat123",
@@ -29,7 +29,7 @@
       "sex": "Sex.male"
     },
     {
-      "id": "PAT_000002",
+      "id": "USER_000004",
       "name": "Maria Garcia",
       "phone": "555-0202",
       "password": "pat456",
@@ -39,7 +39,7 @@
       "sex": "Sex.female"
     },
     {
-      "id": "PHA_000001",
+      "id": "USER_000005",
       "name": "Lisa Wilson",
       "phone": "555-0301",
       "password": "pha123",
@@ -48,7 +48,7 @@
       "pharmacyName": "City Pharmacy"
     },
     {
-      "id": "PHA_000002",
+      "id": "USER_000006",
       "name": "David Kim",
       "phone": "555-0302",
       "password": "pha456",

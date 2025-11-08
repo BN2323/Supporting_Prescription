@@ -3,105 +3,105 @@
     {
       "id": "MED_000001_TODAY_AM",
       "medicationId": "MED_000001",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": false,
       "scheduledTime": "2024-01-15T08:00:00.000"
     },
     {
-      "id": "MED_000001_TODAY_PM", 
+      "id": "MED_000001_TODAY_PM",
       "medicationId": "MED_000001",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": true,
       "scheduledTime": "2024-01-15T20:00:00.000"
     },
     {
       "id": "MED_000002_TODAY_AM",
       "medicationId": "MED_000002",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": false,
       "scheduledTime": "2024-01-15T08:00:00.000"
     },
     {
       "id": "MED_000002_TODAY_PM",
-      "medicationId": "MED_000002", 
-      "patientId": "PAT_000001",
+      "medicationId": "MED_000002",
+      "patientId": "USER_000003",
       "isTaken": false,
       "scheduledTime": "2024-01-15T20:00:00.000"
     },
     {
       "id": "MED_000003_TODAY_MORNING",
       "medicationId": "MED_000003",
-      "patientId": "PAT_000002",
+      "patientId": "USER_000004",
       "isTaken": true,
       "scheduledTime": "2024-01-15T08:00:00.000"
     },
     {
       "id": "MED_000003_TODAY_AFTERNOON",
       "medicationId": "MED_000003",
-      "patientId": "PAT_000002",
+      "patientId": "USER_000004",
       "isTaken": false,
       "scheduledTime": "2024-01-15T14:00:00.000"
     },
     {
       "id": "MED_000003_TODAY_EVENING",
       "medicationId": "MED_000003",
-      "patientId": "PAT_000002",
+      "patientId": "USER_000004",
       "isTaken": false,
       "scheduledTime": "2024-01-15T20:00:00.000"
     },
     {
       "id": "MED_000001_YESTERDAY_AM",
       "medicationId": "MED_000001",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": true,
       "scheduledTime": "2024-01-14T08:00:00.000"
     },
     {
       "id": "MED_000001_YESTERDAY_PM",
       "medicationId": "MED_000001",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": true,
       "scheduledTime": "2024-01-14T20:00:00.000"
     },
     {
       "id": "MED_000002_YESTERDAY_AM",
       "medicationId": "MED_000002",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": false,
       "scheduledTime": "2024-01-14T08:00:00.000"
     },
     {
       "id": "MED_000002_YESTERDAY_PM",
       "medicationId": "MED_000002",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": true,
       "scheduledTime": "2024-01-14T20:00:00.000"
     },
     {
       "id": "MED_000004_TOMORROW_AM",
       "medicationId": "MED_000004",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": false,
       "scheduledTime": "2024-01-16T08:00:00.000"
     },
     {
       "id": "MED_000004_TOMORROW_PM",
       "medicationId": "MED_000004",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": false,
       "scheduledTime": "2024-01-16T20:00:00.000"
     },
     {
       "id": "MED_000005_LAST_WEEK",
       "medicationId": "MED_000005",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": true,
       "scheduledTime": "2024-01-08T08:00:00.000"
     },
     {
       "id": "MED_000006_NEXT_WEEK",
       "medicationId": "MED_000006",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "isTaken": false,
       "scheduledTime": "2024-01-22T08:00:00.000"
     }

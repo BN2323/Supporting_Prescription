@@ -2,7 +2,7 @@
   "renewals": [
     {
       "id": "REN_000001",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "prescriptionId": "RX_000001",
       "requestedDate": "2024-01-10T00:00:00.000",
       "status": "RenewalStatus.approved",
@@ -10,14 +10,14 @@
     },
     {
       "id": "REN_000002",
-      "patientId": "PAT_000002",
+      "patientId": "USER_000004",
       "prescriptionId": "RX_000002",
       "requestedDate": "2024-01-12T00:00:00.000",
       "status": "RenewalStatus.pending"
     },
     {
       "id": "REN_000003",
-      "patientId": "PAT_000001",
+      "patientId": "USER_000003",
       "prescriptionId": "RX_000003",
       "requestedDate": "2024-01-14T00:00:00.000",
       "status": "RenewalStatus.denied",

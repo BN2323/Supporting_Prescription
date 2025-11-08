@@ -2,8 +2,8 @@
   "prescriptions": [
     {
       "id": "RX_000001",
-      "doctorId": "DOC_000001",
-      "patientId": "PAT_000001",
+      "doctorId": "USER_000001",
+      "patientId": "USER_000003",
       "dateIssued": "2024-01-01T00:00:00.000",
       "deaNumber": "AB1234567",
       "status": "PrescriptionStatus.dispensed",
@@ -42,8 +42,8 @@
     },
     {
       "id": "RX_000002",
-      "doctorId": "DOC_000001",
-      "patientId": "PAT_000002",
+      "doctorId": "USER_000001",
+      "patientId": "USER_000004",
       "dateIssued": "2024-01-10T00:00:00.000",
       "deaNumber": "AB1234567",
       "status": "PrescriptionStatus.dispensed",
@@ -67,8 +67,8 @@
     },
     {
       "id": "RX_000003",
-      "doctorId": "DOC_000002",
-      "patientId": "PAT_000001",
+      "doctorId": "USER_000002",
+      "patientId": "USER_000003",
       "dateIssued": "2024-01-05T00:00:00.000",
       "deaNumber": "CD7890123",
       "status": "PrescriptionStatus.dispensed",
@@ -92,8 +92,8 @@
     },
     {
       "id": "RX_000004",
-      "doctorId": "DOC_000002",
-      "patientId": "PAT_000001",
+      "doctorId": "USER_000002",
+      "patientId": "USER_000003",
       "dateIssued": "2023-12-15T00:00:00.000",
       "deaNumber": "CD7890123",
       "status": "PrescriptionStatus.pending",
@@ -117,8 +117,8 @@
     },
     {
       "id": "RX_000005",
-      "doctorId": "DOC_000001",
-      "patientId": "PAT_000002",
+      "doctorId": "USER_000001",
+      "patientId": "USER_000004",
       "dateIssued": "2024-01-20T00:00:00.000",
       "deaNumber": "AB1234567",
       "status": "PrescriptionStatus.cancelled",

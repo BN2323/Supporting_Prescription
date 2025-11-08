@@ -1,7 +1,5 @@
 {
-  "doctor": 3,
-  "patient": 3,
-  "pharmacist": 3,
+  "user": 6,
   "prescription": 6,
   "medication": 7,
   "renewal": 4,
