@@ -117,26 +117,17 @@ void main() {
 
       expect(schedule.length, 6);
       
-<<<<<<< HEAD
       // Check first dose
       expect(schedule[0].id, isNotEmpty);
       expect(schedule[0].patientId, 'PAT_000001');
       expect(schedule[0].medicationId, 'MED_000001');
       expect(schedule[0].scheduledTime, DateTime(now.year, now.month, now.day, 8, 0)); // 8 AM today
-=======
-
-      expect(schedule[0].id, isNotEmpty);
-      expect(schedule[0].patientId, 'PAT_000001');
-      expect(schedule[0].medicationId, 'MED_000001');
-      expect(schedule[0].scheduledTime, DateTime(2024, 1, 1, 8, 0)); 
->>>>>>> f71cdaa1f7eade5e427fb8a8f22ae972f866c894
       expect(schedule[0].isTaken, false);
       
 
       expect(schedule[1].id, isNotEmpty);
       expect(schedule[1].patientId, 'PAT_000001');
       expect(schedule[1].medicationId, 'MED_000001');
-<<<<<<< HEAD
       expect(schedule[1].scheduledTime, DateTime(now.year, now.month, now.day, 20, 0)); // 8 PM today
       expect(schedule[1].isTaken, false);
       
@@ -145,14 +136,6 @@ void main() {
       final dayAfterTomorrow = now.add(Duration(days: 2));
       expect(schedule[2].scheduledTime, DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 8, 0)); // Day 2
       expect(schedule[4].scheduledTime, DateTime(dayAfterTomorrow.year, dayAfterTomorrow.month, dayAfterTomorrow.day, 8, 0)); // Day 3
-=======
-      expect(schedule[1].scheduledTime, DateTime(2024, 1, 1, 20, 0));
-      expect(schedule[1].isTaken, false);
-      
-
-      expect(schedule[2].scheduledTime, DateTime(2024, 1, 2, 8, 0)); 
-      expect(schedule[4].scheduledTime, DateTime(2024, 1, 3, 8, 0)); 
->>>>>>> f71cdaa1f7eade5e427fb8a8f22ae972f866c894
       
  
       final ids = schedule.map((dose) => dose.id).toSet();

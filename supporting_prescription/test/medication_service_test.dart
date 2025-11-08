@@ -40,7 +40,6 @@ void main() {
       expect(renewalsBefore.length, 1);
       final renewalId = renewalsBefore[0].id;
 
-<<<<<<< HEAD
       // Verify initial state
       expect(renewalsBefore[0].status, RenewalStatus.pending);
       expect(renewalsBefore[0].doctorNote, isNull);
@@ -54,15 +53,6 @@ void main() {
       expect(renewalsAfter.length, 1);
       
       final updatedRenewal = renewalsAfter[0];
-=======
-
-      final approveSuccess = medicationService.processRenewal(renewalId, true, 'Approved for 30 more days');
-      expect(approveSuccess, true);
-
-
-      final renewalsAfter = JsonHandler.loadRenewals();
-      final updatedRenewal = renewalsAfter.firstWhere((r) => r.id == renewalId);
->>>>>>> f71cdaa1f7eade5e427fb8a8f22ae972f866c894
       expect(updatedRenewal.status, RenewalStatus.approved);
       expect(updatedRenewal.doctorNote, 'Approved for 30 more days');
     });
@@ -86,7 +76,6 @@ void main() {
       expect(renewalsBefore.length, 1);
       final renewalId = renewalsBefore[0].id;
 
-<<<<<<< HEAD
       // Verify initial state
       expect(renewalsBefore[0].status, RenewalStatus.pending);
       expect(renewalsBefore[0].doctorNote, isNull);
@@ -100,15 +89,6 @@ void main() {
       expect(renewalsAfter.length, 1);
       
       final updatedRenewal = renewalsAfter[0];
-=======
-
-      final denySuccess = medicationService.processRenewal(renewalId, false, 'Patient needs follow-up');
-      expect(denySuccess, true);
-
-
-      final renewalsAfter = JsonHandler.loadRenewals();
-      final updatedRenewal = renewalsAfter.firstWhere((r) => r.id == renewalId);
->>>>>>> f71cdaa1f7eade5e427fb8a8f22ae972f866c894
       expect(updatedRenewal.status, RenewalStatus.denied);
       expect(updatedRenewal.doctorNote, 'Patient needs follow-up');
     });
